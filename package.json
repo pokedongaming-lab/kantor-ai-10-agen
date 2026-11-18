@@ -14,6 +14,7 @@
     "publish": "node scripts/auto-publish.mjs",
     "publish:dry": "node scripts/auto-publish.mjs --dry-run",
     "agents:run": "node scripts/run-autonomous-agents.mjs",
+    "server": "node scripts/api-server.mjs",
     "telegram": "node scripts/telegram-bot-service.mjs",
     "video:remotion": "node scripts/render-remotion.mjs",
     "video:studio": "cd indostill-video && npm run dev"

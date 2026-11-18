@@ -6,24 +6,25 @@ dotenv.config();
 const API_URL = process.env.ROUTER_API_URL || 'http://localhost:20128/v1';
 const API_KEY = process.env.ROUTER_API_KEY || process.env.API_KEY || 'sk-3bddffff6829d29f-stg200-5e5fbe83';
 
-// 1. Distribusi Merata Multi-Combo (Hanya model yang verified 200 OK)
+// 1. Distribusi Merata Multi-Combo (Hanya model yang verified 200 OK & responsif)
 // 2. Fallback pool dinamis jika salah satu model rate-limited / error
 export const AGENT_MODELS = {
-  riset:    { primary: 'combo01', backup: 'combo09', max_tokens: 2500 }, // Raka: Riset mendalam
-  konten:   { primary: 'combo01', backup: 'combo05', max_tokens: 2000 }, // Sekar: Kreativitas naskah & hook
-  desain:   { primary: 'combo05', backup: 'combo01', max_tokens: 1500 }, // Lita: Visual & layout prompt
-  laporan:  { primary: 'combo_compliance', backup: 'combo_legal', max_tokens: 1500 }, // Doni: QA checklist
-  manajer:  { primary: 'combo_secretariat', backup: 'combo01', max_tokens: 2000 }, // Bu Ratna: Secretariat & manajer
-  cs:       { primary: 'combo02', backup: 'combo06', max_tokens: 1000 }, // Fajar: Respon cepat
-  kasir:    { primary: 'combo_finance', backup: 'combo02', max_tokens: 1200 }, // Dina: Finansial & numerik
-  keuangan: { primary: 'combo_finance', backup: 'combo06', max_tokens: 1200 }, // Sari: Invoice & sponsor
-  stok:     { primary: 'combo06', backup: 'combo02', max_tokens: 1000 }, // Bayu: Inventory
-  pesanan:  { primary: 'combo02', backup: 'combo06', max_tokens: 1000 }, // Rina: Antrean publish
+  riset:    { primary: 'combo03', backup: 'combo01', max_tokens: 2500 }, // Raka: Riset mendalam
+  konten:   { primary: 'combo01', backup: 'combo03', max_tokens: 2000 }, // Sekar: Kreativitas naskah & hook
+  desain:   { primary: 'combo05', backup: 'combo03', max_tokens: 1500 }, // Lita: Visual & layout prompt
+  laporan:  { primary: 'combo03', backup: 'combo05', max_tokens: 1500 }, // Doni: QA checklist
+  manajer:  { primary: 'combo03', backup: 'combo01', max_tokens: 2000 }, // Bu Ratna: Secretariat & manajer
+  cs:       { primary: 'combo03', backup: 'combo01', max_tokens: 1000 }, // Fajar: Respon cepat
+  kasir:    { primary: 'combo03', backup: 'combo01', max_tokens: 1200 }, // Dina: Finansial & numerik
+  keuangan: { primary: 'combo03', backup: 'combo05', max_tokens: 1200 }, // Sari: Invoice & sponsor
+  stok:     { primary: 'combo03', backup: 'combo01', max_tokens: 1000 }, // Bayu: Inventory
+  pesanan:  { primary: 'combo03', backup: 'combo05', max_tokens: 1000 }, // Rina: Antrean publish
 };
 
 export async function askLLM(agentKey, systemPrompt, userMessage) {
-  const conf = AGENT_MODELS[agentKey] || { primary: 'combo01', backup: 'combo02', max_tokens: 1500 };
-  const modelsToTry = [conf.primary, conf.backup, 'combo01', 'combo02', 'combo_secretariat'];
+  const conf = AGENT_MODELS[agentKey] || { primary: 'combo03', backup: 'combo01', max_tokens: 1500 };
+  const rawList = [conf.primary, conf.backup, 'combo03', 'combo01', 'combo05'];
+  const modelsToTry = rawList.filter((v, i, a) => a.indexOf(v) === i);
 
   let lastError = null;
 

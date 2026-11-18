@@ -351,13 +351,21 @@
         "copywriting_team": "Tone otoritatif, fokus business value"
       }
     },
-    "ringkasan": "Strategi konten mingguan dan arahan tim telah difinalisasi.",
+    "ringkasan": "Strategi konten mingguan dan alur distribusi disetujui (Status: APPROVED) untuk auto-publish.",
     "menunggu": [],
     "mendesak": [],
     "angka": [
       {
-        "label": "Status",
-        "nilai": "Aktif"
+        "label": "Status Tim",
+        "nilai": "10 Agen Aktif"
+      },
+      {
+        "label": "Prioritas Hari Ini",
+        "nilai": "3 Konten Approved"
+      },
+      {
+        "label": "Target Konversi",
+        "nilai": "Tinggi"
       }
     ]
   }

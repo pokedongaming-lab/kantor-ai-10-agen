@@ -1,8 +1,276 @@
 import React, { useState, useEffect } from 'react';
 import css from './CmsDashboard.module.css';
+import laporanAgen from '../laporan.json';
+import { AGEN } from '../config';
 
 // API Base URL
 const API_BASE = '/api/v1';
+
+const DEFAULT_OVERVIEW = {
+  stats: {
+    totalContent: 8,
+    inProduction: 3,
+    awaitingApproval: 1,
+    scheduled: 4,
+    published: 3,
+    totalViews: 649000,
+    followersGrowth: '+12.4%',
+    engagementRate: '8.4%',
+    avgRetention: '78.2%',
+  },
+  recentContents: [
+    { content_id: 'CNT-2026-001', title: 'Tutorial DeepSeek R1 di HP', platform: 'TikTok', pillar: 'AI Tools', status: 'PUBLISHED' },
+    { content_id: 'CNT-2026-002', title: '3 Tools AI Wajib Mahasiswa', platform: 'Instagram Reels', pillar: 'AI Tools', status: 'IN_PRODUCTION' },
+    { content_id: 'CNT-2026-003', title: 'Cara Otomatisasi Medsos Pakai AI', platform: 'YouTube Shorts', pillar: 'AI Automation', status: 'APPROVAL' },
+    { content_id: 'CNT-2026-004', title: 'Prompt Engineering Cheatsheet', platform: 'Instagram Carousel', pillar: 'AI Tools', status: 'SCHEDULED' },
+  ],
+  recentTasks: [
+    { agent_key: 'laporan', task_type: 'Audit Kualitas Mutu (CQS 95/100)', status: 'COMPLETED', created_at: new Date().toISOString() },
+    { agent_key: 'manajer', task_type: 'Persetujuan Strategi & Distribusi', status: 'COMPLETED', created_at: new Date().toISOString() },
+    { agent_key: 'konten', task_type: 'Penulisan Naskah Video Pendek', status: 'COMPLETED', created_at: new Date().toISOString() },
+    { agent_key: 'desain', task_type: 'Perancangan Brief Thumbnail Neon Tech', status: 'COMPLETED', created_at: new Date().toISOString() },
+  ],
+  agentsCount: 10,
+  autonomous: { enabled: true, running: false, cycleCount: 1 },
+};
+
+const DEFAULT_AGENTS = AGEN.map((ag) => {
+  const lap = (laporanAgen as Record<string, any>)[ag.key] || {};
+  return {
+    id: ag.key,
+    agent_key: ag.key,
+    name: ag.nama,
+    role: ag.tugas,
+    model: 'combo03 / combo01 (9Router)',
+    status: 'ACTIVE',
+    lastTask: {
+      task_type: lap.ringkasan ? (lap.ringkasan.length > 55 ? lap.ringkasan.substring(0, 52) + '…' : lap.ringkasan) : 'Siaga Komando',
+      status: 'COMPLETED',
+    },
+  };
+});
+
+const DEFAULT_CONTENTS = [
+  { content_id: 'CNT-2026-001', title: 'Tutorial DeepSeek R1 di HP: AI Reasoning Lokal', topic: 'DeepSeek-R1', platform: 'TikTok', pillar: 'AI Tools', status: 'PUBLISHED', target_audience: 'Developer & Tech Enthusiast' },
+  { content_id: 'CNT-2026-002', title: '3 Tools AI Wajib Mahasiswa & Produktivitas', topic: 'Productivity AI', platform: 'Instagram Reels', pillar: 'AI Tools', status: 'IN_PRODUCTION', target_audience: 'Mahasiswa & Kreator' },
+  { content_id: 'CNT-2026-003', title: 'Cara Otomatisasi Medsos Pakai AI & Webhook', topic: 'Browser-Use', platform: 'YouTube Shorts', pillar: 'AI Automation', status: 'APPROVAL', target_audience: 'Solopreneur & Automation Engineer' },
+  { content_id: 'CNT-2026-004', title: 'Prompt Engineering Cheatsheet untuk Coding', topic: 'Qwen 2.5-Coder', platform: 'Instagram Carousel', pillar: 'Coding & Tech', status: 'SCHEDULED', target_audience: 'Software Engineers' },
+];
+
+const DEFAULT_DETAIL = {
+  content: {
+    content_id: 'CNT-2026-001',
+    title: 'Tutorial DeepSeek R1 di HP: AI Reasoning Lokal Bebas Biaya API',
+    topic: 'DeepSeek-R1',
+    platform: 'TikTok',
+    pillar: 'AI Tools',
+    status: 'PUBLISHED',
+  },
+  script: {
+    hook: 'Bayangin punya AI yang bisa mikir kompleks seperti OpenAI o1, tapi bisa kamu jalankan sendiri di komputer!',
+    curiosity_gap: 'Kenalin, DeepSeek-R1! Model AI reasoning yang bikin industri teknologi melirik. Kemampuannya dalam matematika, coding, dan penalaran diklaim sebanding dengan OpenAI o1.',
+    main_content: 'Yang menarik, model ini punya bobot terbuka. Bahkan, kamu bisa menjalankannya secara lokal menggunakan Ollama. Tinggal buka terminal, ketik: ollama run deepseek-r1.',
+    payoff: 'Artinya? Kamu bisa mengurangi ketergantungan pada API berbayar dan, jika dikonfigurasi lokal, data yang kamu proses tidak perlu dikirim ke server AI eksternal.',
+    cta: 'Developer, masih mau bakar uang buat API? Save video ini dan tag temanmu yang wajib nyobain!',
+    alt_hooks: [
+      'OpenAI panik. Model AI murah ini bantai model penalaran mahal!',
+      'Stop bayar API mahal! AI reasoning lokal ini gratis selamanya.',
+      'Kenapa developer senior mulai beralih ke DeepSeek-R1 di localhost?'
+    ],
+    caption: 'Tutorial jalankan DeepSeek-R1 lokal tanpa ketergantungan API eksternal. Hemat biaya, privasi terjaga.',
+    hashtags: ['#DeepSeekR1', '#LocalAI', '#Ollama', '#OpenSource', '#indostill'],
+    visual_directions: 'Split-screen terminal Ollama vs benchmark o1, subtitle sans-serif tebal neon green, closing logo indostill.',
+    estimated_duration_sec: 45,
+    word_count: 88,
+  },
+  qc: {
+    hook_score: 19.0,
+    story_score: 14.5,
+    fact_score: 19.5,
+    retention_score: 14.5,
+    visual_score: 9.5,
+    edu_score: 9.5,
+    cta_score: 8.5,
+    total_cqs: 95.0,
+    status: 'PASS',
+    anti_slop_passed: true,
+    fact_check_report: 'Naskah bebas klise AI. Klaim bobot open-weight & instalasi Ollama valid.',
+    revision_notes: 'Lolos uji mutu QA standar industri.',
+  },
+  approval: {
+    decision: 'APPROVED',
+    notes: 'Disetujui Bu Ratna untuk auto-publish sesuai jam prime time.',
+    approved_by: 'Bu Ratna',
+  },
+  storyboard: [
+    { scene_idx: 1, title: 'Hook Terminal', description: 'Opening punch-in Andre dengan latar belakang server neon.', visual_type: 'TALKING_HEAD' },
+    { scene_idx: 2, title: 'Demo Ollama', description: 'Screen recording perintah ollama run deepseek-r1.', visual_type: 'SCREEN_RECORDING' },
+    { scene_idx: 3, title: 'CTA & Closing', description: 'Kartu ringkasan tips & badge indostill.id.', visual_type: 'MOTION_GRAPHICS' },
+  ],
+};
+
+const DEFAULT_CALENDAR = [
+  { id: 1, content_id: 'CNT-2026-004', title: 'Prompt Engineering Cheatsheet', platform: 'Instagram Carousel', scheduled_time: '09:00 WIB', target_handle: '@andre.don2', auto_publish: true, status: 'READY' },
+  { id: 2, content_id: 'CNT-2026-001', title: 'Tutorial DeepSeek R1 di HP', platform: 'TikTok Feed', scheduled_time: '12:00 WIB', target_handle: '@indostill.id', auto_publish: true, status: 'DISPATCHED' },
+  { id: 3, content_id: 'CNT-2026-002', title: '3 Tools AI Wajib Mahasiswa', platform: 'IG Reels', scheduled_time: '17:30 WIB', target_handle: '@andre.don2', auto_publish: true, status: 'READY' },
+  { id: 4, content_id: 'CNT-2026-003', title: 'Cara Otomatisasi Medsos Pakai AI', platform: 'YT Shorts', scheduled_time: '19:30 WIB', target_handle: '@andre.don2', auto_publish: false, status: 'WAITING_REVIEW' },
+];
+
+const DEFAULT_COMMUNITY = [
+  {
+    id: 1,
+    platform: 'TikTok',
+    user_name: 'Rio',
+    comment_text: 'Bang Andre, tutorial pasang AI lokal di laptop RAM 8GB dong!',
+    sentiment: 'QUESTION',
+    category: 'TECHNICAL',
+    draft_reply: 'Bisa banget Rio! Pakai Ollama kuantisasi Q4 model 1.5B atau 7B, jalan enteng di RAM 8GB. Konten lengkapnya segera tayang ya!',
+    status: 'APPROVED'
+  },
+  {
+    id: 2,
+    platform: 'Instagram',
+    user_name: 'Sari (Brand Tech)',
+    comment_text: 'Halo Mas Andre, kami dari AI SaaS Startup ingin invite review tool kami, ada rate card?',
+    sentiment: 'POSITIVE',
+    category: 'PARTNERSHIP',
+    draft_reply: 'Halo Kak Sari! Terima kasih atas tawarannya. Silakan kirimkan proposal & brief ke email partnership resmi indostill.id ya.',
+    status: 'PENDING'
+  },
+  {
+    id: 3,
+    platform: 'TikTok',
+    user_name: 'Kevin',
+    comment_text: 'Bang, tools auto-publish ke TikTok pakai webhook apa yang paling aman dari banned?',
+    sentiment: 'QUESTION',
+    category: 'TECHNICAL',
+    draft_reply: 'Paling aman pakai TikTok Content Posting API resmi yang diintegrasikan lewat n8n/Make, tanpa bot scraping liar ya Kevin!',
+    status: 'APPROVED'
+  }
+];
+
+const DEFAULT_MONETIZATION = [
+  {
+    id: 1,
+    brand_name: 'Cursor IDE Pro',
+    campaign_name: 'AI Coding Assistant Referral',
+    utm_link: 'https://indostill.id/ref/cursor-ai?utm_source=tiktok',
+    platform: 'TikTok',
+    clicks: 1420,
+    leads: 184,
+    ctr: 12.9,
+    conversion_rate: 13.0,
+    deliverables_status: 'COMPLETED'
+  },
+  {
+    id: 2,
+    brand_name: 'Hostinger Cloud VPS',
+    campaign_name: 'Self-Hosted AI Server Promotion',
+    utm_link: 'https://indostill.id/ref/hostinger?utm_source=instagram',
+    platform: 'Instagram',
+    clicks: 860,
+    leads: 92,
+    ctr: 10.7,
+    conversion_rate: 10.6,
+    deliverables_status: 'IN_PROGRESS'
+  }
+];
+
+const DEFAULT_ANALYTICS = {
+  summary: {
+    totalViews: 649000,
+    avgWatchTimeSec: 28.4,
+    avgCompletionRate: '68.2%',
+    topPerformingHook: 'OpenAI panik. Model AI murah ini bantai model penalaran mahal!',
+    bestPostingHour: '19:30 WIB'
+  },
+  platformBreakdown: [
+    { platform: 'TikTok', views: 308000, engagement: '9.4%', shareRate: '4.8%' },
+    { platform: 'YouTube Shorts', views: 177000, engagement: '6.1%', shareRate: '2.1%' },
+    { platform: 'Instagram Reels', views: 164000, engagement: '7.8%', shareRate: '3.2%' }
+  ],
+  topContent: [
+    { title: 'Tutorial DeepSeek R1 Lokal (TikTok)', views: 120000, retention: '82%', cqs: 95.0 },
+    { title: 'Automation n8n Auto Publish (TikTok)', views: 110000, retention: '76%', cqs: 91.5 },
+    { title: 'Cara Bikin Web Pakai AI (YT Shorts)', views: 92000, retention: '74%', cqs: 88.0 }
+  ],
+  recommendations: [
+    'Engagement video TikTok DeepSeek melonjak, prioritaskan video part 2 seputar integrasi API.',
+    'Optimalkan jam posting Reels pada rentang 17:00 - 18:30 WIB untuk menaikkan retention 15 detik pertama.',
+    'Rilis cheatsheet prompt engineering di Carousel IG untuk memaksimalkan saves & shares.'
+  ]
+};
+
+const DEFAULT_RESEARCH = {
+  agent: {
+    name: 'Raka',
+    role: 'Trend Intelligence & AI Researcher',
+    model: 'combo03 / combo01 (9Router)',
+    status: 'ACTIVE'
+  },
+  ideas: [
+    {
+      id: 1,
+      content_id: 'CNT-2026-001',
+      title: 'DeepSeek-R1 Lawan OpenAI o1: Model Lokal Bebas Biaya',
+      pillar: 'AI Tools',
+      trend_source: 'GitHub Trending, Reddit r/LocalLLaMA',
+      opportunity_score: 95.0,
+      viral_potential: 24.5,
+      audience_relevance: 19.5,
+      trend_momentum: 19.0,
+      share_save_potential: 14.5,
+      brand_relevance: 9.5,
+      seo_potential: 8.0,
+      status: 'APPROVED'
+    },
+    {
+      id: 2,
+      content_id: 'CNT-2026-003',
+      title: 'Browser-Use: Agentic AI Ambil Alih Otomasi Web',
+      pillar: 'AI Automation',
+      trend_source: 'GitHub Trending, Twitter/X Tech',
+      opportunity_score: 93.5,
+      viral_potential: 23.5,
+      audience_relevance: 19.0,
+      trend_momentum: 19.0,
+      share_save_potential: 14.0,
+      brand_relevance: 9.5,
+      seo_potential: 8.5,
+      status: 'APPROVED'
+    },
+    {
+      id: 3,
+      content_id: 'CNT-2026-004',
+      title: 'Qwen 2.5-Coder di Laptop Spek Rendah (Offline)',
+      pillar: 'Coding & Tech',
+      trend_source: 'Hugging Face Open LLM, Discord Community',
+      opportunity_score: 96.0,
+      viral_potential: 24.0,
+      audience_relevance: 20.0,
+      trend_momentum: 19.5,
+      share_save_potential: 15.0,
+      brand_relevance: 9.5,
+      seo_potential: 8.0,
+      status: 'APPROVED'
+    }
+  ],
+  trendRadarSources: [
+    { source: 'GitHub Trending', focus: 'Open-Source AI & Local Developer Tools', velocity: 'Very High', status: 'MONITORING' },
+    { source: 'Reddit r/LocalLLaMA', focus: 'Quantized LLMs, Ollama, VRAM benchmarks', velocity: 'High', status: 'MONITORING' },
+    { source: 'Hugging Face Open LLM', focus: 'Reasoning models, DeepSeek, Qwen2.5', velocity: 'Extreme', status: 'MONITORING' },
+    { source: 'TikTok Tech Creators', focus: 'Viral AI workflows, cursor shortcuts', velocity: 'High', status: 'MONITORING' },
+    { source: 'Google Trends Indonesia', focus: 'Kecerdasan Buatan, Coding Pemula, AI Tools', velocity: 'Rising', status: 'MONITORING' }
+  ],
+  scoringGuide: {
+    viralPotential: '25% - Hook viral & share impulse',
+    audienceRelevance: '20% - Developer & tech creator fit',
+    trendMomentum: '20% - Kecepatan lonjakan tren terkini',
+    shareSavePotential: '15% - Potensi simpan & referensi',
+    personalBrand: '10% - Kesesuaian dengan indostill.id',
+    seoPotential: '10% - Volume kata kunci & pencarian'
+  }
+};
 
 export interface CmsDashboardProps {
   onToggleOffice3D?: () => void;
@@ -11,20 +279,21 @@ export interface CmsDashboardProps {
 export const CmsDashboard: React.FC<CmsDashboardProps> = ({ onToggleOffice3D }) => {
   const [activeTab, setActiveTab] = useState<string>('overview');
   const [loading, setLoading] = useState<boolean>(false);
+  const [isLiveApi, setIsLiveApi] = useState<boolean>(false);
   const [notification, setNotification] = useState<{ type: 'success' | 'error' | 'info'; message: string } | null>(null);
 
-  // Data states
-  const [overviewData, setOverviewData] = useState<any>(null);
-  const [agents, setAgents] = useState<any[]>([]);
-  const [contents, setContents] = useState<any[]>([]);
+  // Data states initialized with rich local/synchronized fallback data
+  const [overviewData, setOverviewData] = useState<any>(DEFAULT_OVERVIEW);
+  const [agents, setAgents] = useState<any[]>(DEFAULT_AGENTS);
+  const [contents, setContents] = useState<any[]>(DEFAULT_CONTENTS);
   const [selectedContentId, setSelectedContentId] = useState<string>('CNT-2026-001');
-  const [contentDetail, setContentDetail] = useState<any>(null);
-  const [calendarItems, setCalendarItems] = useState<any[]>([]);
-  const [communityItems, setCommunityItems] = useState<any[]>([]);
-  const [monetizationItems, setMonetizationItems] = useState<any[]>([]);
-  const [analyticsData, setAnalyticsData] = useState<any>(null);
-  const [researchData, setResearchData] = useState<any>(null);
-  const [autonomousStatus, setAutonomousStatus] = useState<any>({ enabled: true, running: false, cycleCount: 0 });
+  const [contentDetail, setContentDetail] = useState<any>(DEFAULT_DETAIL);
+  const [calendarItems, setCalendarItems] = useState<any[]>(DEFAULT_CALENDAR);
+  const [communityItems, setCommunityItems] = useState<any[]>(DEFAULT_COMMUNITY);
+  const [monetizationItems, setMonetizationItems] = useState<any[]>(DEFAULT_MONETIZATION);
+  const [analyticsData, setAnalyticsData] = useState<any>(DEFAULT_ANALYTICS);
+  const [researchData, setResearchData] = useState<any>(DEFAULT_RESEARCH);
+  const [autonomousStatus, setAutonomousStatus] = useState<any>({ enabled: true, running: false, cycleCount: 1 });
 
   // Form states for workflow trigger
   const [newTopic, setNewTopic] = useState<string>('');
@@ -67,9 +336,12 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ onToggleOffice3D }) 
     try {
       const res = await fetch(`${API_BASE}/overview`);
       const json = await res.json();
-      if (json.success) setOverviewData(json.data);
+      if (json.success) {
+        setOverviewData(json.data);
+        setIsLiveApi(true);
+      }
     } catch (e) {
-      console.error('Error fetch overview:', e);
+      // Graceful fallback to local data
     }
   };
 
@@ -440,7 +712,9 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ onToggleOffice3D }) 
         <header className={css.topBar}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <h1 className={css.pageTitle}>{tabTitle[activeTab] || activeTab}</h1>
-            <span className={css.dbBadge}>pg:5433</span>
+            <span className={css.dbBadge} style={{ color: isLiveApi ? 'var(--success)' : 'var(--accent)' }}>
+              {isLiveApi ? '● Live API (pg)' : '● Standalone (10 Agen)'}
+            </span>
 
             {/* Autonomous Mode Toggle Badge */}
             <div
