@@ -564,15 +564,15 @@ export default function OfficeScene({ desks, night, boardCount, anchors, boardAn
       notes.forEach((n, i) => (n.visible = i % noteColors.length < count));
       for (const a of actors) {
         const d = list.find((x) => x.desk.key === a.key);
-        const act = d?.doing.activity ?? 'pulang';
-        const away = act === 'pulang';
-        a.root.visible = !away;
+        const act = d?.doing.activity ?? 'siaga';
+        // Di Kantor AI 24/7, seluruh 10 agen selalu hadir dan terlihat
+        a.root.visible = true;
         const busy = act === 'kerja' || act === 'laporan';
         const sm = a.screen.material as MeshLambertMaterial;
         sm.emissive.set(busy ? (act === 'laporan' ? '#7bdff2' : '#66e3a5') : act === 'belajar' ? '#ffd166' : act === 'siaga' ? '#5b4a92' : '#000000');
         sm.emissiveIntensity = busy ? 0.8 + (reduce ? 0 : 0.2 * Math.sin(t * 9 + a.phase)) : 0.6;
         a.book.visible = act === 'belajar';
-        const lampOn = act === 'belajar' || (isNight && !away);
+        const lampOn = act === 'belajar' || isNight;
         a.lamp.visible = lampOn;
         if (a.light) a.light.intensity = lampOn && isNight ? 2.2 : 0;
         const dm = a.deskTop.material as MeshLambertMaterial;
@@ -586,7 +586,8 @@ export default function OfficeScene({ desks, night, boardCount, anchors, boardAn
         let walking = false;
         let going = true;
         let spot: IdleSpot = 'meja';
-        if (cinematic && act === 'siaga' && !reduce) {
+        const isIdle = act === 'siaga' || act === 'pulang' || act === 'belajar';
+        if (cinematic && isIdle && !reduce) {
           const idle = idleAt(a.key, t);
           k = idle.k;
           walking = idle.walking;

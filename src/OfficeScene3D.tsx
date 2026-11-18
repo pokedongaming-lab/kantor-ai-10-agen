@@ -33,6 +33,7 @@ import {
   Mesh,
   MeshBasicMaterial,
   MeshLambertMaterial,
+  MeshStandardMaterial,
   type Material,
   type BufferGeometry,
   OrthographicCamera,
@@ -618,11 +619,31 @@ export default function OfficeScene({
           (gltf) => {
             // GLB loaded successfully — hide primitives, show GLB
             const glbGroup = gltf.scene;
-            glbGroup.scale.setScalar(0.6);           // scale to fit office scene
+            glbGroup.scale.setScalar(0.85); // proporsional dengan meja (0.78m) dan kursi (0.50m)
             glbGroup.position.set(0, 0, 0);
+
+            // Berikan sedikit emissive glow agar warna pastel tetap pop & terlihat jelas di malam hari
+            glbGroup.traverse((child) => {
+              if ((child as Mesh).isMesh) {
+                const m = child as Mesh;
+                m.castShadow = true;
+                m.receiveShadow = true;
+                if (m.material) {
+                  const mat = m.material as MeshStandardMaterial;
+                  if (mat.color) {
+                    mat.emissive = mat.color.clone();
+                    mat.emissiveIntensity = 0.25;
+                  }
+                  mat.roughness = 0.45;
+                  mat.metalness = 0.05;
+                  mat.needsUpdate = true;
+                }
+              }
+            });
+
             root.add(glbGroup);
 
-            // Hide primitive geometry
+            // Hide primitive geometry setelah GLB sukses masuk scene
             body.visible = false;
             head.visible = false;
             armL.visible = false;
@@ -635,9 +656,17 @@ export default function OfficeScene({
             actor.glbGroup = glbGroup;
             actor.mixer = mixer;
             actor.clips = gltf.animations;
+
+            // Mainkan animasi awal langsung
+            const initClip = findClip(gltf.animations, 'Idle') || gltf.animations[0];
+            if (initClip) {
+              const act = mixer.clipAction(initClip);
+              act.play();
+            }
           },
           undefined, // progress callback (unused)
-          (_err) => {
+          (err) => {
+            console.warn(`[OfficeScene3D] Gagal memuat GLB ${glbFilename}:`, err);
             // Load failed — primitive fallback stays visible, actor unchanged
           },
         );
@@ -732,8 +761,13 @@ export default function OfficeScene({
     };
 
     // ── GLB animation helpers ─────────────────────────────────────────────────
-    const findClip = (clips: AnimationClip[], name: string): AnimationClip | undefined =>
-      clips.find((c) => c.name === name || c.name.toLowerCase() === name.toLowerCase());
+    const findClip = (clips: AnimationClip[], name: string): AnimationClip | undefined => {
+      const lower = name.toLowerCase();
+      return clips.find((c) => {
+        const cLower = c.name.toLowerCase();
+        return cLower === lower || cLower.endsWith('_' + lower) || cLower.includes(lower);
+      });
+    };
 
     const playGlbClip = (actor: Actor, state: AgentState) => {
       const { mixer, clips } = actor;
@@ -812,9 +846,9 @@ export default function OfficeScene({
 
       for (const a of actors) {
         const d = list.find((x) => x.desk.key === a.key);
-        const act = d?.doing.activity ?? 'pulang';
-        const away = act === 'pulang';
-        a.root.visible = !away;
+        const act = d?.doing.activity ?? 'siaga';
+        // Di Kantor AI 24/7, seluruh 10 agen selalu hadir dan terlihat aktif (tidak pernah disembunyikan)
+        a.root.visible = true;
 
         const busy = act === 'kerja' || act === 'laporan';
         const sm = a.screen.material as MeshLambertMaterial;
@@ -825,7 +859,7 @@ export default function OfficeScene({
         );
         sm.emissiveIntensity = busy ? 0.8 + (reduce ? 0 : 0.2 * Math.sin(t * 9 + a.phase)) : 0.6;
         a.book.visible = act === 'belajar';
-        const lampOn = act === 'belajar' || (isNight && !away);
+        const lampOn = act === 'belajar' || isNight;
         a.lamp.visible = lampOn;
         if (a.light) a.light.intensity = lampOn && isNight ? 2.2 : 0;
         const dm = a.deskTop.material as MeshLambertMaterial;
@@ -834,25 +868,13 @@ export default function OfficeScene({
           dm.emissiveIntensity = reduce ? 0.5 : 0.25 + 0.35 * (0.5 + 0.5 * Math.sin(t * 6));
         } else dm.emissiveIntensity = 0;
 
-        // GLB animation update
-        if (a.mixer) {
-          a.mixer.update(dt);
-          // Map office activity → GLB clip
-          const glbState: AgentState =
-            act === 'kerja' ? 'working' :
-              act === 'laporan' ? 'completed' :
-                act === 'belajar' ? 'belajar' :
-                  act === 'siaga' ? 'idle' :
-                    act === 'pulang' ? 'pulang' : 'idle';
-          playGlbClip(a, glbState);
-        }
-
-        // ── position + primitive animation (unchanged logic) ─────────────────
+        // ── position + spot navigation logic ──────────────────────────────────
         let k = 0;
         let walking = false;
         let going = true;
         let spot: IdleSpot = 'meja';
-        if (cinematic && act === 'siaga' && !reduce) {
+        const isIdle = act === 'siaga' || act === 'pulang' || act === 'belajar';
+        if (cinematic && isIdle && !reduce) {
           const idle = idleAt(a.key, t);
           k = idle.k;
           walking = idle.walking;
@@ -877,6 +899,18 @@ export default function OfficeScene({
         else a.root.rotation.set(0, 0, 0);
         a.root.position.y = spot === 'sofa' && k === 1 ? -0.05 : 0;
         a.label.set(pos.x, standing && !sitting ? 1.95 : (cinematic ? 1.75 : 2.1), pos.z);
+
+        // GLB animation update
+        if (a.mixer) {
+          a.mixer.update(dt);
+          // Map dynamic activity to GLB Action
+          const glbState: AgentState =
+            walking ? 'walking' :
+              busy ? (act === 'laporan' ? 'completed' : 'working') :
+                act === 'belajar' ? 'belajar' :
+                  sitting ? 'idle' : 'idle';
+          playGlbClip(a, glbState);
+        }
 
         // Primitive fallback animation (only when GLB not loaded)
         if (!a.glbGroup) {

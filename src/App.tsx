@@ -15,7 +15,7 @@ const hm = (d: Date) => `${String(d.getHours()).padStart(2, '0')}:${String(d.get
 export default function App() {
   const p = useMemo(() => readParams(new URLSearchParams(location.search)), []);
   const [viewMode, setViewMode] = useState<'dashboard' | 'office'>('dashboard');
-  const [use3D, setUse3D] = useState(false);
+  const [use3D, setUse3D] = useState(true);
   const [now, setNow] = useState(() => new Date());
   const [t, setT] = useState(0);
   const [open, setOpen] = useState<DeskState | null>(null);
@@ -47,7 +47,8 @@ export default function App() {
 
   const lapse = p.lapse ? lapseAt(t) : null;
   const time = lapse?.time ?? p.time ?? hm(now);
-  const desks = officeDesks(isoDay(now), time, p.alwaysWork);
+  // Di Kantor AI 24/7, seluruh 10 agen selalu hadir dan aktif di kantor (tidak pernah pulang/hilang)
+  const desks = officeDesks(isoDay(now), time, p.alwaysWork ?? true);
   const board = missionBoard(desks);
   const night = isNight(time);
   const withBubble = desks.filter((d) => d.bubble);
