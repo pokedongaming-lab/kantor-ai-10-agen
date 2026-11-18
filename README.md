@@ -1,64 +1,69 @@
-# Kantor AI 3D (template gratis)
+# Kantor AI 10-Agent Studio — Andre D'Andreas (indostill.id)
 
-> Template oleh Maliki Saputra (@malikisaputra) — https://malikisaputra.biz.id. Gratis dengan **Lisensi Nonkomersial Maliki Studio 1.0**: boleh dipakai untuk belajar, pribadi, atau usaha/organisasimu sendiri; wajib cantumkan kredit; **dilarang dijual, dijual ulang, atau dipakai untuk jasa berbayar ke pihak lain**. Lihat `LICENSE`.
+> Template awal 3D oleh Maliki Saputra (@malikisaputra) — https://malikisaputra.biz.id. Lisensi Nonkomersial Maliki Studio 1.0 (lihat `LICENSE`).
 
+Sistem otomatisasi studio kreator & kantor virtual 3D isometrik untuk **Andre D'Andreas** (Niche: Teknologi & Kecerdasan Buatan / AI). Dilengkapi dengan **AI CMS Dashboard**, **orkestrasi 10 Agen Otonom (9Router LLM)**, **pipeline verifikasi anti-slop**, **auto-publish webhook medsos**, dan **video rendering Remotion**.
 
-Kantor isometrik 3D untuk agen AI kamu: tiap agen duduk di mejanya, mengetik saat jam tugas, menulis laporan sore, belajar malam, dan saat santai ngopi, lihat Mission Board, atau ngobrol di sofa. Ada gelembung ringkasan, tanda "!" untuk butir yang menunggu keputusan, meja berkedip untuk yang mendesak, dan timelapse satu hari kerja yang bisa direkam jadi video reels.
+---
 
-Dibuat dengan React + Three.js (bentuk sederhana, tanpa model 3D, jadi ringan di HP). Gratis, Lisensi Nonkomersial Maliki Studio 1.0 (dilarang dijual ulang).
+## 🏢 Struktur Kantor 2 Lantai (10 Agen AI)
 
-Diambil dari halaman "Kantor" di **Imagiive Lapor**, sistem laporan internal Imagiive Group, tempat agen AI kami melapor setiap hari.
+### Lantai 1 · Distribusi & Analitik
+- **Kasir (Dina):** Analis metrik performa konten, retention rate, watch time, dan engagement platform.
+- **Pesanan (Rina):** Pengatur antrean postingan media sosial dan webhook auto-publishing ke TikTok, IG Reels, dan YT Shorts.
+- **CS (Fajar):** Community Growth Manager, menyusun draf balasan teknis dan edukatif untuk komentar audiens dan DM.
+- **Stok (Bayu):** Kurator bank aset media (b-roll laptop, audio trending, screen recording tutorial, thumbnail template).
+- **Keuangan (Sari):** Tracker monetisasi, performa link bio, CTR affiliate tools AI, dan tawaran sponsorship.
 
-## Mulai
+### Lantai 2 · Kreatif & Produksi
+- **Riset (Raka):** AI Trend Intelligence Researcher, memantau tren model LLM baru, GitHub trending, dan prompt tricks.
+- **Konten (Sekar):** Lead Scriptwriter anti-slop, menulis 3 naskah video pendek 5-Act dengan hook tajam berenergi tinggi.
+- **Desain (Lita):** Visual Content Director, merancang brief thumbnail cover neon tech mode dengan kontras tinggi.
+- **Laporan (Doni):** Quality Assurance & Fact Checker, memverifikasi akurasi teknis perintah terminal, klaim RAM, dan bebas klise AI.
+- **Manajer (Bu Ratna):** Chief Content Strategist & General Manager, penentu strategi mingguan dan approval publikasi.
 
-Butuh [Node.js](https://nodejs.org) 20+.
+---
 
+## 🚀 Memulai
+
+### Prasyarat
+- [Node.js](https://nodejs.org) 20+
+
+### Instalasi & Menjalankan Frontend
 ```bash
 npm install
 npm run dev
 ```
+Buka **http://localhost:5173**:
+- Tombol **"📊 BUKA AI CMS DASHBOARD"** di pojok kanan atas memungkinkan perpindahan instan antara visualisasi Kantor 3D dan Dashboard CMS Studio.
+- Berjalan otomatis dalam mode **Standalone** tersinkronisasi dengan `src/laporan.json` bahkan tanpa koneksi database.
 
-Buka http://localhost:5173.
+---
 
-| Alamat | Isi |
-|---|---|
-| `/` | Kantor dengan jam sekarang |
-| `/?jam=08.10` | Kantor di jam tertentu |
-| `/?timelapse=1` | Satu hari kerja dalam 30 detik (pagi, sore, malam) |
-| `/?libur=1` | Ikuti akhir pekan sungguhan (default: kantor contoh tetap bekerja) |
+## ⚡ Perintah Operasional CLI
 
-## Ubah jadi kantormu
+| Perintah | Deskripsi |
+| :--- | :--- |
+| `npm run dev` | Menjalankan Vite Dev Server (Kantor 3D & AI CMS Dashboard di port 5173) |
+| `npm run server` | Menjalankan Express API Backend (`localhost:3001`) dengan query fallback mandiri |
+| `npm run agents:run` | Menjalankan siklus otonom 10 agen AI secara berurutan via 9Router LLM |
+| `npm run publish:dry` | Simulasi pengujian payload antrean postingan ke TikTok, Instagram, dan YouTube |
+| `npm run publish` | Mengirim antrean konten siap tayang ke `PUBLISH_WEBHOOK_URL` (n8n / Make.com) |
+| `npm run video:remotion` | Merender video vertikal 9:16 otomatis menggunakan Remotion engine |
+| `npm test` | Menjalankan 10 unit test otomatis (logika kantor, skema ketat 10 agen, integritas CSV) |
+| `npm run build` | Kompilasi TypeScript dan bundler Vite produksi ke folder `dist/` |
 
-Semua ada di **`src/config.ts`**:
+---
 
-- `KANTOR`: nama dan subjudul di pojok kiri atas.
-- `RUANGAN`: tiga ruangan, label, warna lantai dan karpet.
-- `AGEN`: nama, tugas, ruangan, warna baju, posisi meja.
-- `JADWAL`: jam tugas tiap agen (WIB) dan labelnya ("radar tender…").
-- `LAPORAN`: ringkasan, butir menunggu, butir mendesak, dan angka hari ini.
-- `BABAK`: tiga babak timelapse.
+## 🔒 Privasi Data & Aturan Komitmen
 
-Tips: biar cepat, buka folder ini di Claude Code dan minta, misalnya, "ganti agennya jadi 4: Admin, Sales, Desainer, Penulis, jadwalnya …".
+1. **Bebas Data Finansial Rahasia:** Sesuai aturan di [AGENTS.md](AGENTS.md), tidak ada nominal rupiah atau data rahasia yang di-commit.
+2. **Proteksi Kredensial:** `.env` dan token rahasia dikecualikan secara ketat di [.gitignore](.gitignore). Kredensial dinamis dibaca via `process.env`.
+3. **Standar Anti-Slop:** Naskah konten bebas dari kalimat pembuka klise AI bot ("Stop scroll", "Tahukah kamu", "Game changer").
 
-## Sambungkan agen asli
+---
 
-Laporan agen dibaca dari **`src/laporan.json`** (sekarang data contoh). Kuncinya sama dengan `key` di `AGEN`, isinya `ringkasan`, `menunggu`, `mendesak`, dan `angka`. Suruh agenmu (Antigravity, Claude Code, dll.) menulis laporannya ke file ini setiap sore; kantornya langsung berubah. Jangan tampilkan nominal uang atau data rahasia kalau videonya mau dibagikan.
+## 📜 Lisensi & Kredit
 
-## Rekam jadi video
-
-Butuh Google Chrome dan [ffmpeg](https://ffmpeg.org) (`brew install ffmpeg` di Mac). Biarkan `npm run dev` jalan, lalu di terminal lain:
-
-```bash
-npm run rekam -- kantor-ai.mp4
-```
-
-Hasilnya MP4 vertikal 1080×1920, 30 fps, 30 detik, direkam frame demi frame (bukan rekam layar), jadi mulus. Opsi: `--w 1920 --h 1080` untuk landscape, `--detik 15`, `--fps 60`. Lokasi Chrome/ffmpeg lain: `CHROME=/path FFMPEG=/path npm run rekam -- out.mp4`.
-
-## Perintah lain
-
-- `npm test`: tes logika jadwal, timelapse, dan agen santai.
-- `npm run build`: versi siap unggah di folder `dist/` (bisa ditaruh di Netlify, Vercel, atau GitHub Pages).
-
-## Lisensi
-
-Lisensi Nonkomersial Maliki Studio 1.0: boleh dipakai untuk belajar, pribadi, atau usaha/organisasimu sendiri, diubah, dan dibagikan gratis dengan kredit "Template oleh Maliki Saputra (@malikisaputra) — https://malikisaputra.biz.id". **Dilarang dijual, dijual ulang, atau dipakai untuk jasa berbayar ke pihak lain.** Lihat `LICENSE`.
+Template dasar kantor 3D oleh **Maliki Saputra** (@malikisaputra) — https://malikisaputra.biz.id.  
+Lisensi Nonkomersial Maliki Studio 1.0: boleh dipakai untuk belajar, pribadi, atau usaha/organisasimu sendiri; wajib cantumkan kredit; **dilarang dijual, dijual ulang, atau dipakai untuk jasa berbayar ke pihak lain**. Lihat [LICENSE](LICENSE).

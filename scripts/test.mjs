@@ -52,4 +52,34 @@ t('meja dan Mission Board', () => {
 t('parameter URL', () => {
   assert.deepEqual(O.params(new URLSearchParams('timelapse=1&rekam=1&jam=08.10')), { lapse: true, rec: true, time: '08:10', alwaysWork: true });
 });
+
+t('laporan.json skema ketat 10 agen sesuai AGENTS.md', async () => {
+  const fs = await import('node:fs');
+  const laporan = JSON.parse(fs.readFileSync(path.join(root, 'src/laporan.json'), 'utf-8'));
+  const wajibKeys = ['kasir', 'pesanan', 'cs', 'stok', 'keuangan', 'riset', 'konten', 'desain', 'laporan', 'manajer'];
+  for (const k of wajibKeys) {
+    assert.ok(laporan[k], `Kunci agen ${k} harus ada di laporan.json`);
+    assert.ok(typeof laporan[k].ringkasan === 'string' && laporan[k].ringkasan.length > 0, `Ringkasan ${k} tidak boleh kosong`);
+    assert.ok(Array.isArray(laporan[k].menunggu), `Menunggu ${k} harus berupa array`);
+    assert.ok(Array.isArray(laporan[k].mendesak), `Mendesak ${k} harus berupa array`);
+    assert.ok(Array.isArray(laporan[k].angka) && laporan[k].angka.length > 0, `Angka ${k} harus memiliki minimal 1 metrik`);
+  }
+});
+
+t('integritas berkas data/ CSV & TXT', async () => {
+  const fs = await import('node:fs');
+  assert.ok(fs.existsSync(path.join(root, 'data/penjualan.csv')), 'penjualan.csv harus ada');
+  assert.ok(fs.existsSync(path.join(root, 'data/pesanan.csv')), 'pesanan.csv harus ada');
+  assert.ok(fs.existsSync(path.join(root, 'data/stok.csv')), 'stok.csv harus ada');
+  assert.ok(fs.existsSync(path.join(root, 'data/pesan-wa.txt')), 'pesan-wa.txt harus ada');
+});
+
+t('db.mjs query fallback standalone', async () => {
+  const { query } = await import('./db.mjs');
+  const res = await query('SELECT * FROM agents');
+  assert.equal(res.rows.length, 10, 'Harus mereturn 10 agen terdaftar');
+  const contentsRes = await query('SELECT * FROM contents');
+  assert.ok(contentsRes.rows.length >= 4, 'Harus mereturn konten pipeline');
+});
+
 console.log(`${n} tes lulus`);
