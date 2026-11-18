@@ -137,10 +137,8 @@
     ]
   },
   "keuangan": {
-    "ringkasan": "Tracking performa monetisasi & link bio: 12 lonjakan klik link affiliate tools AI dan 1 tawaran kemitraan sponsorship baru.",
-    "menunggu": [
-      "Penyusunan paket rate card sponsorship khusus produk AI SaaS"
-    ],
+    "ringkasan": "Tracking monetisasi & affiliate: 12 lonjakan klik link tools AI, Rate Card Kemitraan SaaS selesai disusun.",
+    "menunggu": [],
     "mendesak": [],
     "angka": [
       {
@@ -156,8 +154,8 @@
         "nilai": "420 unduhan"
       },
       {
-        "label": "Inquiry brand aktif",
-        "nilai": "1 kemitraan"
+        "label": "Paket sponsorship siap",
+        "nilai": "3 Tier Aktif"
       }
     ]
   },

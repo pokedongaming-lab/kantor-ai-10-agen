@@ -50,6 +50,10 @@ for (const post of siapPublish) {
   console.log(`   ⏰ Jadwal Tayang : ${post.jam_kirim} WIB`);
   console.log(`   📦 Format        : ${post.jumlah}`);
 
+  // Tentukan path berkas media yang tersedia
+  const defaultVideoPath = path.join(root, 'output/videos/video_remotion_deepseek_optimized.mp4');
+  const hasLocalVideo = fs.existsSync(defaultVideoPath);
+
   const payload = {
     creator: "Andre D'Andreas",
     niche: 'Teknologi & AI',
@@ -58,6 +62,9 @@ for (const post of siapPublish) {
     target_handle: post.target_handle || (post.pelanggan.includes('TikTok') ? '@indostill.id' : '@andre.don2'),
     topic: post.produk,
     format: post.jumlah,
+    media_type: post.jumlah.includes('slide') ? 'carousel' : 'video',
+    media_url: process.env.PUBLIC_MEDIA_URL_BASE ? `${process.env.PUBLIC_MEDIA_URL_BASE}/${post.id}.mp4` : (hasLocalVideo ? defaultVideoPath : null),
+    caption: `${post.produk} — Panduan komputasi AI lokal untuk developer & tech creator. #indostill #LocalAI #DevTips`,
     schedule_time: post.jam_kirim,
     status: 'dispatched',
     created_at: new Date().toISOString(),
@@ -68,20 +75,33 @@ for (const post of siapPublish) {
     console.log('   Payload:', JSON.stringify(payload, null, 2));
     console.log('   ✅ Simulasi pengiriman ke platform berhasil!\n');
   } else {
-    try {
-      console.log(`   🌐 Mengirim ke Webhook: ${webhookUrl}...`);
-      const res = await fetch(webhookUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
-      if (res.ok) {
-        console.log(`   ✅ Berhasil dikirim ke Webhook (HTTP ${res.status})!\n`);
-      } else {
-        console.error(`   ⚠️ Webhook merespons dengan status: ${res.status}\n`);
+    // Retry loop dengan exponential backoff (maksimal 3 percobaan)
+    let attempt = 0;
+    let sent = false;
+    while (attempt < 3 && !sent) {
+      attempt++;
+      try {
+        console.log(`   🌐 Mengirim ke Webhook: ${webhookUrl} (Percobaan ${attempt}/3)...`);
+        const res = await fetch(webhookUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+          signal: AbortSignal.timeout(10000),
+        });
+        if (res.ok) {
+          console.log(`   ✅ Berhasil dikirim ke Webhook (HTTP ${res.status})!\n`);
+          sent = true;
+        } else {
+          console.error(`   ⚠️ Webhook merespons status ${res.status}.`);
+          if (attempt < 3) await new Promise((r) => setTimeout(r, 2000 * attempt));
+        }
+      } catch (err) {
+        console.error(`   ❌ Percobaan ${attempt} gagal: ${err.message}`);
+        if (attempt < 3) await new Promise((r) => setTimeout(r, 2000 * attempt));
       }
-    } catch (err) {
-      console.error(`   ❌ Gagal mengirim ke webhook: ${err.message}\n`);
+    }
+    if (!sent) {
+      console.error(`   ⛔ Gagal mengirim [${post.id}] setelah 3 percobaan. Masuk ke antrean darurat.\n`);
     }
   }
 }
