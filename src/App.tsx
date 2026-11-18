@@ -3,8 +3,10 @@ import { flushSync } from 'react-dom';
 import { KANTOR } from './config';
 import { IDLE_LABEL, idleAt, isNight, isoDay, lapseAt, missionBoard, officeDesks, params as readParams, type DeskState, type IdleSpot } from './office';
 import { CmsDashboard } from './components/CmsDashboard';
+import { GlbErrorBoundary } from './components/GlbErrorBoundary';
 
 const OfficeScene = lazy(() => import('./OfficeScene'));
+const OfficeScene3D = lazy(() => import('./OfficeScene3D'));
 
 const HARI = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
 const BULAN = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
@@ -13,6 +15,7 @@ const hm = (d: Date) => `${String(d.getHours()).padStart(2, '0')}:${String(d.get
 export default function App() {
   const p = useMemo(() => readParams(new URLSearchParams(location.search)), []);
   const [viewMode, setViewMode] = useState<'dashboard' | 'office'>('dashboard');
+  const [use3D, setUse3D] = useState(false);
   const [now, setNow] = useState(() => new Date());
   const [t, setT] = useState(0);
   const [open, setOpen] = useState<DeskState | null>(null);
@@ -53,7 +56,23 @@ export default function App() {
   return (
     <div className="ko" data-night={night || undefined}>
       {/* Floating Toggle Button to AI CMS Dashboard */}
-      <div style={{ position: 'fixed', top: 20, right: 20, zIndex: 9999 }}>
+      <div style={{ position: 'fixed', top: 20, right: 20, zIndex: 9999, display: 'flex', gap: 10 }}>
+        <button
+          onClick={() => setUse3D((v) => !v)}
+          style={{
+            backgroundColor: use3D ? '#1a0a2e' : '#0F1322',
+            color: use3D ? '#c084fc' : '#aaa',
+            border: `2px solid ${use3D ? '#c084fc' : '#444'}`,
+            borderRadius: 12,
+            padding: '12px 20px',
+            fontWeight: 800,
+            fontSize: 13,
+            cursor: 'pointer',
+            boxShadow: use3D ? '0 8px 30px rgba(192,132,252,0.4)' : 'none',
+          }}
+        >
+          🎮 {use3D ? '3D Premium Mode ✓' : '3D Premium Mode'}
+        </button>
         <button
           onClick={() => setViewMode('dashboard')}
           style={{
@@ -74,15 +93,42 @@ export default function App() {
 
       <div className="ko-stage">
         <Suspense fallback={<div className="ko-loading">Menyiapkan kantor…</div>}>
-          <OfficeScene
-            desks={desks}
-            night={night}
-            boardCount={Math.min(board.items.length, 8)}
-            anchors={anchors}
-            boardAnchor={boardAnchor}
-            cinematic={true}
-            drive={drive}
-          />
+          {use3D ? (
+            <GlbErrorBoundary
+              agentKey="OfficeScene3D"
+              fallback={
+                <OfficeScene
+                  desks={desks}
+                  night={night}
+                  boardCount={Math.min(board.items.length, 8)}
+                  anchors={anchors}
+                  boardAnchor={boardAnchor}
+                  cinematic={true}
+                  drive={drive}
+                />
+              }
+            >
+              <OfficeScene3D
+                desks={desks}
+                night={night}
+                boardCount={Math.min(board.items.length, 8)}
+                anchors={anchors}
+                boardAnchor={boardAnchor}
+                cinematic={true}
+                drive={drive}
+              />
+            </GlbErrorBoundary>
+          ) : (
+            <OfficeScene
+              desks={desks}
+              night={night}
+              boardCount={Math.min(board.items.length, 8)}
+              anchors={anchors}
+              boardAnchor={boardAnchor}
+              cinematic={true}
+              drive={drive}
+            />
+          )}
         </Suspense>
 
         {desks.map((d) => {

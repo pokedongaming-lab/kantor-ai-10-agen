@@ -2,6 +2,9 @@
 import { AGEN, BABAK, JADWAL, JAM_KANTOR, LAPORAN, type Agen, type RoomKey } from './config';
 
 export type Activity = 'kerja' | 'laporan' | 'belajar' | 'siaga' | 'pulang';
+
+/** State agen untuk sistem animasi 3D (dipetakan ke AnimationMixer di OfficeScene3D). */
+export type AgentState = 'idle' | 'working' | 'thinking' | 'blocked' | 'completed' | 'walking' | 'pulang';
 export interface Doing {
   activity: Activity;
   label: string;

@@ -1,0 +1,987 @@
+/**
+ * OfficeScene3D.tsx — Upgraded Three.js scene with animated GLB characters.
+ *
+ * Replaces primitive box-characters with GLTF/GLB models loaded via GLTFLoader.
+ * Falls back to primitive geometry if a GLB is missing (app never crashes).
+ * Keeps all existing workstation / office geometry from OfficeScene.tsx unchanged.
+ *
+ * Exports:
+ *   default  OfficeScene(props: SceneProps)   — same interface as OfficeScene.tsx
+ *   async    fetchAgentStates()               — calls /api/v1/agents, maps key→state
+ */
+
+import { useEffect, useRef } from 'react';
+import {
+  AmbientLight,
+  AnimationAction,
+  AnimationClip,
+  AnimationMixer,
+  CanvasTexture,
+  PlaneGeometry,
+  BoxGeometry,
+  CapsuleGeometry,
+  CircleGeometry,
+  Color,
+  ConeGeometry,
+  CylinderGeometry,
+  DirectionalLight,
+  Fog,
+  Group,
+  HemisphereLight,
+  LoopOnce,
+  LoopRepeat,
+  Mesh,
+  MeshBasicMaterial,
+  MeshLambertMaterial,
+  type Material,
+  type BufferGeometry,
+  OrthographicCamera,
+  PointLight,
+  Scene,
+  SphereGeometry,
+  Vector3,
+  WebGLRenderer,
+} from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { LANTAI, RUANGAN, AGEN } from './config';
+
+type AgentKey = string;
+import { idleAt, type DeskState, type IdleSpot } from './office';
+
+// ─── Backend adapter ─────────────────────────────────────────────────────────
+
+/**
+ * Calls /api/v1/agents and maps agent_key → state string.
+ * Returns empty object on 404 / any network failure.
+ */
+export async function fetchAgentStates(): Promise<Record<string, string>> {
+  try {
+    const res = await fetch('/api/v1/agents');
+    if (!res.ok) return {};
+    const json = (await res.json()) as unknown;
+    if (!json || typeof json !== 'object' || Array.isArray(json)) return {};
+    const result: Record<string, string> = {};
+    for (const [k, v] of Object.entries(json as Record<string, unknown>)) {
+      if (typeof v === 'string') result[k] = v;
+    }
+    return result;
+  } catch {
+    return {};
+  }
+}
+
+// ─── Scene constants (mirror OfficeScene.tsx) ────────────────────────────────
+
+const shade = (hex: string, f: number) => {
+  const c = new Color(hex);
+  c.multiplyScalar(f);
+  return `#${c.getHexString()}`;
+};
+
+const ROOMS = RUANGAN.map((r) => ({
+  x0: r.x0,
+  x1: r.x1,
+  lantai: r.lantai as number,
+  floor: r.warna,
+  floorNight: shade(r.warna, 0.32),
+  rug: r.karpet,
+}));
+
+const FLOOR_H = 3.2;
+const FLOOR_DZ = -6.5;
+const floorOffset = (n: number) => new Vector3(0, (n - 1) * FLOOR_H, (n - 1) * FLOOR_DZ);
+const Z0 = -3.5;
+const Z1 = 3;
+const SKIN = ['#f1c7a5', '#d9a07b', '#c68863', '#e8b896', '#b97a56', '#f0c09c'];
+const HAIR = ['#2b1d16', '#1b1330', '#5a3825', '#2b1d16', '#7a4a2a', '#1b1330'];
+const BOARD = new Vector3(0.1, 0, -2.5);
+
+const smooth = (x: number) => x * x * (3 - 2 * x);
+
+// ─── Animation state mapping ──────────────────────────────────────────────────
+
+type AgentState =
+  | 'idle' | 'siaga'
+  | 'working' | 'kerja'
+  | 'thinking'
+  | 'blocked'
+  | 'completed' | 'laporan'
+  | 'walking'
+  | 'belajar'
+  | 'pulang'
+  | string; // passthrough for Activity types from office.ts
+
+function clipNameForState(state: AgentState): { name: string; loop: boolean; timeScale: number } {
+  switch (state) {
+    case 'idle':
+    case 'siaga':
+      return { name: 'Idle', loop: true, timeScale: 1 };
+    case 'working':
+    case 'kerja':
+      return { name: 'Type', loop: true, timeScale: 1 };
+    case 'thinking':
+      return { name: 'Think', loop: true, timeScale: 1 };
+    case 'blocked':
+      return { name: 'Idle', loop: true, timeScale: 0.4 };
+    case 'completed':
+    case 'laporan':
+      return { name: 'Talk', loop: false, timeScale: 1 };
+    case 'walking':
+      return { name: 'Walk', loop: true, timeScale: 1 };
+    case 'belajar':
+      return { name: 'Sit', loop: true, timeScale: 1 };
+    default:
+      return { name: 'Idle', loop: true, timeScale: 1 };
+  }
+}
+
+// ─── Actor ───────────────────────────────────────────────────────────────────
+
+interface Actor {
+  key: AgentKey;
+  root: Group;
+  // primitive fallback parts
+  body: Mesh;
+  head: Mesh;
+  armL: Mesh;
+  armR: Mesh;
+  legL: Mesh;
+  legR: Mesh;
+  // GLB character (null until loaded)
+  glbGroup: Group | null;
+  mixer: AnimationMixer | null;
+  clips: AnimationClip[];
+  currentClipName: string;
+  celebrateQueued: boolean;
+  // desk props
+  screen: Mesh;
+  deskTop: Mesh;
+  book: Mesh;
+  lamp: Mesh;
+  light: PointLight | null;
+  seat: Vector3;
+  label: Vector3;
+  phase: number;
+  index: number;
+  floor: Group;
+  world: Vector3;
+}
+
+// ─── SceneProps (identical to OfficeScene.tsx) ────────────────────────────────
+
+export interface SceneProps {
+  desks: readonly DeskState[];
+  night: boolean;
+  boardCount: number;
+  anchors: React.RefObject<Map<AgentKey, HTMLElement>>;
+  boardAnchor: React.RefObject<HTMLElement | null>;
+  cinematic?: boolean;
+  manual?: boolean;
+  drive?: React.RefObject<((t: number) => void) | null>;
+  onReady?: () => void;
+  onFail?: () => void;
+}
+
+// ─── Main component ───────────────────────────────────────────────────────────
+
+export default function OfficeScene({
+  desks,
+  night,
+  boardCount,
+  anchors,
+  boardAnchor,
+  cinematic,
+  manual,
+  drive,
+  onReady,
+  onFail,
+}: SceneProps) {
+  const host = useRef<HTMLDivElement>(null);
+  const live = useRef({ desks, night, boardCount, dirty: true });
+  live.current = { desks, night, boardCount, dirty: true };
+
+  useEffect(() => {
+    const el = host.current;
+    if (!el) return;
+
+    // ── renderer ──────────────────────────────────────────────────────────────
+    let renderer: WebGLRenderer;
+    const touch = window.matchMedia('(pointer: coarse)').matches;
+    try {
+      renderer = new WebGLRenderer({
+        antialias: !touch || !!manual,
+        alpha: true,
+        powerPreference: manual ? 'high-performance' : 'low-power',
+        preserveDrawingBuffer: !!manual,
+      });
+    } catch {
+      onFail?.();
+      return;
+    }
+    renderer.setPixelRatio(manual ? 1 : Math.min(window.devicePixelRatio || 1, touch ? 1.5 : 2));
+    el.appendChild(renderer.domElement);
+    renderer.domElement.setAttribute('aria-hidden', 'true');
+
+    // ── scene & lights ────────────────────────────────────────────────────────
+    const scene = new Scene();
+    if (cinematic) scene.fog = new Fog('#f4b98a', 32, 52);
+
+    const camera = new OrthographicCamera(-10, 10, 6, -6, 0.1, 100);
+    const target = new Vector3(-0.5, 3.6, -3.6);
+
+    const hemi = new HemisphereLight('#fff6ea', '#a58b73', 1.5);
+    const sun = new DirectionalLight('#ffe2b8', 1.7);
+    sun.position.set(-6, 12, 8);
+    const amb = new AmbientLight('#ffffff', 0.35);
+    scene.add(hemi, sun, amb);
+
+    // ── OrbitControls (cinematic mode) ────────────────────────────────────────
+    let orbitControls: OrbitControls | null = null;
+    if (cinematic) {
+      orbitControls = new OrbitControls(camera, renderer.domElement);
+      orbitControls.enableDamping = true;
+      orbitControls.dampingFactor = 0.05;
+      orbitControls.target.copy(target);
+      orbitControls.update();
+    }
+
+    // ── disposables helpers ───────────────────────────────────────────────────
+    const disposables: { dispose(): void }[] = [];
+    const geo = <T extends BufferGeometry>(g: T) => (disposables.push(g), g);
+    const mat = (color: string, emissive?: string) => {
+      const m = new MeshLambertMaterial({
+        color,
+        emissive: emissive ? new Color(emissive) : undefined,
+      });
+      disposables.push(m);
+      return m;
+    };
+
+    let cur: Scene | Group = scene;
+    const add = (mesh: Mesh, x: number, y: number, z: number, parent: Scene | Group | Mesh = cur) => {
+      mesh.position.set(x, y, z);
+      parent.add(mesh);
+      return mesh;
+    };
+    const box = (w: number, h: number, d: number, m: Material, x: number, y: number, z: number, parent?: Group) =>
+      add(new Mesh(geo(new BoxGeometry(w, h, d)), m), x, y, z, parent);
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // BUILDING (identical to OfficeScene.tsx)
+    // ─────────────────────────────────────────────────────────────────────────
+    const lineM = mat('#cdb79c');
+    const floors: { m: MeshLambertMaterial; r: (typeof ROOMS)[number] }[] = [];
+    const wallM = mat('#c4683f');
+    const wallSideM = mat('#a9532f');
+    const mortarM = mat('#e2b48c');
+    const trimM = mat('#271b3f');
+    const woodM = mat('#6b4226');
+    const railM = new MeshLambertMaterial({
+      color: '#bfe3ff',
+      emissive: new Color('#7fb8e6'),
+      transparent: true,
+      opacity: 0.35,
+    });
+    disposables.push(railM);
+    const noteColors = ['#ffd166', '#f3355b', '#7bdff2', '#b2f7ef', '#f7aef8', '#cdb4db', '#ffd166', '#7bdff2'];
+    const notes: Mesh[] = [];
+    const pendant: Mesh[] = [];
+    const glassM = mat('#bfe3ff', '#7fb8e6');
+    const floorGroups = new Map<number, Group>();
+
+    for (const L of LANTAI) {
+      const fg = new Group();
+      fg.position.copy(floorOffset(L.no));
+      scene.add(fg);
+      floorGroups.set(L.no, fg);
+      cur = fg;
+      const top = L.no === LANTAI.length;
+      const rooms = ROOMS.filter((r) => r.lantai === L.no);
+      for (const r of rooms) {
+        const m = mat(r.floor);
+        box(r.x1 - r.x0 - 0.04, 0.14, Z1 - Z0, m, (r.x0 + r.x1) / 2, -0.07, (Z0 + Z1) / 2);
+        for (let z = Z0 + 0.5; z < Z1; z += 0.65)
+          box(r.x1 - r.x0 - 0.1, 0.005, 0.02, lineM, (r.x0 + r.x1) / 2, 0.002, z);
+        box(2.6, 0.02, 1.8, mat(r.rug), (r.x0 + r.x1) / 2 - 1.6, 0.012, 0.8);
+        floors.push({ m, r });
+      }
+      if (L.no === 1) box(14.6, 0.5, Z1 - Z0 + 0.6, mat('#3a2a5c'), 0, -0.4, (Z0 + Z1) / 2 + 0.15);
+      else {
+        box(14.4, 0.3, Z1 - Z0 + 0.2, mat('#3a2a5c'), 0, -0.29, (Z0 + Z1) / 2 + 0.05);
+        box(14.4, 0.06, 0.08, trimM, 0, 0.9, Z1 + 0.1);
+        box(14.4, 0.8, 0.03, railM, 0, 0.48, Z1 + 0.1);
+        box(0.08, 0.06, Z1 - Z0 - 1.6, trimM, 7.15, 0.9, (Z0 + Z1) / 2 - 0.8);
+        box(0.03, 0.8, Z1 - Z0 - 1.6, railM, 7.15, 0.48, (Z0 + Z1) / 2 - 0.8);
+        for (let x = -7; x <= 7.01; x += 2) box(0.06, 0.9, 0.06, trimM, x, 0.45, Z1 + 0.1);
+      }
+      box(14, 3, 0.18, wallM, 0, 1.5, Z0 - 0.09);
+      box(0.18, 3, Z1 - Z0, wallSideM, -7.09, 1.5, (Z0 + Z1) / 2);
+      box(14, 0.12, 0.22, woodM, 0, 0.06, Z0 - 0.02);
+      box(0.22, 0.12, Z1 - Z0, woodM, -7.02, 0.06, (Z0 + Z1) / 2);
+      for (const x of rooms.slice(1).map((r) => r.x0)) {
+        box(0.14, 1.0, 1.6, wallSideM, x, 0.5, Z1 - 0.8);
+        box(0.18, 0.06, 1.6, woodM, x, 1.02, Z1 - 0.8);
+      }
+      for (const x of [-5.6, -3.4, 3.4, 5.6]) {
+        box(1.6, 1.2, 0.06, trimM, x, 1.8, Z0 + 0.02);
+        box(1.44, 1.04, 0.04, glassM, x, 1.8, Z0 + 0.05);
+        box(0.05, 1.04, 0.05, trimM, x, 1.8, Z0 + 0.07);
+      }
+      for (const z of [-1.2, 1.4]) {
+        box(0.06, 1.1, 1.4, trimM, -7.0, 1.8, z);
+        box(0.04, 0.96, 1.26, glassM, -6.97, 1.8, z);
+      }
+      for (const r of rooms) box(1.6, 0.26, 0.04, mat(r.rug, r.rug), (r.x0 + r.x1) / 2 - 2.2, 2.75, Z0 + 0.03);
+
+      box(3.2, 1.6, 0.1, trimM, BOARD.x, 1.75, Z0 + 0.05);
+      box(3.0, 1.4, 0.04, mat('#f7f2ea'), BOARD.x, 1.75, Z0 + 0.11);
+      noteColors.forEach((c, i) => {
+        const n = box(0.5, 0.4, 0.02, mat(c, c), BOARD.x - 1.05 + (i % 4) * 0.7, 2.12 - Math.floor(i / 4) * 0.6, Z0 + 0.15);
+        (n.material as MeshLambertMaterial).emissiveIntensity = 0.2;
+        n.rotation.z = ((i * 37) % 7) / 60 - 0.05;
+        notes.push(n);
+      });
+
+      const shelf = (x: number, z: number, rot = 0) => {
+        const g = new Group();
+        box(1.2, 1.8, 0.36, woodM, 0, 0.9, 0, g);
+        const bookColors = ['#e4572e', '#2a9d8f', '#f2b134', '#3a86ff', '#8e6bd8', '#ff5d8f'];
+        for (let row = 0; row < 3; row++)
+          for (let i = 0; i < 6; i++)
+            box(0.14, 0.34, 0.26, mat(bookColors[(i + row) % 6]!), -0.45 + i * 0.18, 0.4 + row * 0.55, 0.04, g);
+        g.position.set(x, 0, z);
+        g.rotation.y = rot;
+        cur.add(g);
+      };
+
+      if (L.no === 1) {
+        const breadM = [mat('#c98a4b'), mat('#e0a95e'), mat('#9c5a2c')];
+        const rack = new Group();
+        box(1.3, 1.9, 0.45, woodM, 0, 0.95, 0, rack);
+        for (let row = 0; row < 4; row++) {
+          box(1.24, 0.04, 0.42, mat('#d9b48a'), 0, 0.35 + row * 0.45, 0.02, rack);
+          for (let i = 0; i < 4; i++) {
+            const b = add(new Mesh(geo(new CapsuleGeometry(0.1, 0.14, 4, 8)), breadM[(i + row) % 3]!), -0.45 + i * 0.3, 0.47 + row * 0.45, 0.06, rack);
+            b.rotation.z = Math.PI / 2;
+          }
+        }
+        rack.position.set(-6.7, 0, -0.1);
+        rack.rotation.y = Math.PI / 2;
+        fg.add(rack);
+        box(1.5, 1.6, 0.8, mat('#5a5f66'), 6.1, 0.8, Z0 + 0.45);
+        box(1.1, 0.5, 0.04, mat('#ff9a3c', '#ff7a1a'), 6.1, 1.0, Z0 + 0.86);
+        box(1.1, 0.04, 0.04, mat('#c9ccd1'), 6.1, 1.35, Z0 + 0.88);
+        box(1.5, 0.3, 0.8, mat('#3d4146'), 6.1, 1.75, Z0 + 0.45);
+        box(2.4, 0.8, 0.7, woodM, 2.1, 0.4, 2.55);
+        box(2.3, 0.5, 0.64, railM, 2.1, 1.05, 2.55);
+        box(2.4, 0.04, 0.7, mat('#f6e7c8'), 2.1, 1.31, 2.55);
+        for (let i = 0; i < 6; i++)
+          add(new Mesh(geo(new SphereGeometry(0.13, 10, 8)), breadM[i % 3]!), 1.35 + i * 0.3, 0.92, 2.55).scale.set(1.3, 0.7, 1);
+      } else shelf(6.2, -3.2);
+
+      const potM = mat('#c26b3b');
+      const leafM = mat('#3f9b4f');
+      const leaf2M = mat('#5bbf5e');
+      void top;
+      const plant = (x: number, z: number, s = 1) => {
+        add(new Mesh(geo(new CylinderGeometry(0.2 * s, 0.16 * s, 0.4 * s, 12)), potM), x, 0.2 * s, z);
+        add(new Mesh(geo(new ConeGeometry(0.34 * s, 0.9 * s, 8)), leafM), x, 0.85 * s, z);
+        add(new Mesh(geo(new SphereGeometry(0.26 * s, 10, 8)), leaf2M), x + 0.12 * s, 0.7 * s, z + 0.1 * s);
+      };
+      plant(-6.5, 2.6, 1.2);
+      plant(1.5, -3.0);
+      plant(6.55, 2.6, 1.2);
+      plant(-2.3, -3.0);
+      plant(2.5, 2.6, 0.9);
+      box(1.8, 0.42, 0.7, mat('#5b4a72'), 0.1, 0.21, 2.3);
+      box(1.8, 0.5, 0.18, mat('#3a2a5c'), 0.1, 0.62, 2.62);
+      box(0.7, 0.3, 0.5, woodM, 0.1, 0.15, 1.5);
+      box(1.4, 0.95, 0.5, woodM, -1.2, 0.47, -3.1);
+      box(0.36, 0.42, 0.3, trimM, -1.45, 1.16, -3.1);
+      add(new Mesh(geo(new CylinderGeometry(0.07, 0.06, 0.14, 10)), mat('#ffffff')), -1.0, 1.02, -3.05);
+      for (const [x, z] of [[-4.4, 0], [0.1, 0.2], [4.5, -0.2]] as const) {
+        box(0.02, 0.9, 0.02, trimM, x, 3.15, z);
+        pendant.push(add(new Mesh(geo(new ConeGeometry(0.32, 0.3, 14, 1, true)), mat('#271b3f', '#000000')), x, 2.6, z));
+      }
+      for (let y = 0.35; y < 3; y += 0.35) {
+        box(14, 0.025, 0.02, mortarM, 0, y, Z0 + 0.005);
+        box(0.02, 0.025, Z1 - Z0, mortarM, -6.995, y, (Z0 + Z1) / 2);
+      }
+      box(0.05, 0.34, 2.2, mat(L.no === 1 ? '#e4572e' : '#3a86ff', L.no === 1 ? '#e4572e' : '#3a86ff'), -6.98, 2.6, -2.2);
+    }
+
+    cur = scene;
+
+    // ── signboard ─────────────────────────────────────────────────────────────
+    {
+      const cv = document.createElement('canvas');
+      cv.width = 1024;
+      cv.height = 256;
+      const g2 = cv.getContext('2d');
+      const tex = new CanvasTexture(cv);
+      disposables.push(tex);
+      const renderBoard = (img?: HTMLImageElement) => {
+        if (!g2) return;
+        g2.fillStyle = '#0a0e17';
+        g2.fillRect(0, 0, 1024, 256);
+        g2.strokeStyle = '#00F0FF';
+        g2.lineWidth = 10;
+        g2.strokeRect(10, 10, 1004, 236);
+        if (img && img.complete) {
+          const logoH = 160;
+          const logoW = (img.width / img.height) * logoH;
+          const logoX = 140;
+          const logoY = 48;
+          try { g2.drawImage(img, logoX, logoY, logoW, logoH); } catch (_) {}
+          g2.fillStyle = '#f8fafc';
+          g2.font = '800 86px "Segoe UI", Roboto, sans-serif';
+          g2.textAlign = 'left';
+          g2.textBaseline = 'middle';
+          g2.fillText('indostill.id', logoX + logoW + 40, 128);
+        } else {
+          g2.fillStyle = '#f8fafc';
+          g2.font = '800 96px "Segoe UI", Roboto, sans-serif';
+          g2.textAlign = 'center';
+          g2.textBaseline = 'middle';
+          g2.fillText('indostill.id', 512, 128);
+        }
+        tex.needsUpdate = true;
+      };
+      renderBoard();
+      const logoImg = new Image();
+      logoImg.crossOrigin = 'anonymous';
+      logoImg.src = '/logo-indostill.png';
+      logoImg.onload = () => renderBoard(logoImg);
+      const signM = new MeshBasicMaterial({ map: tex });
+      disposables.push(signM);
+      const sign = new Mesh(geo(new PlaneGeometry(6, 1.5)), signM);
+      sign.position.set(0, FLOOR_H + 3.95, FLOOR_DZ + Z0 + 0.15);
+      scene.add(sign);
+      box(6.2, 1.7, 0.12, trimM, 0, FLOOR_H + 3.95, FLOOR_DZ + Z0 + 0.06);
+      for (const x of [-2.4, 2.4]) box(0.1, 0.9, 0.1, trimM, x, FLOOR_H + 2.95, FLOOR_DZ + Z0 + 0.06);
+    }
+
+    // ── stairs ────────────────────────────────────────────────────────────────
+    {
+      const stepM = mat('#a87c56');
+      const sideM = mat('#3a2a5c');
+      const n = 14;
+      const zA = 2.0;
+      const zB = FLOOR_DZ + Z1 + 0.2;
+      for (let i = 0; i < n; i++) {
+        const y = ((i + 1) / n) * FLOOR_H;
+        const z = zA + ((zB - zA) * (i + 0.5)) / n;
+        box(1.2, 0.12, Math.abs(zB - zA) / n + 0.04, stepM, 7.85, y - 0.06, z);
+      }
+      const len = Math.hypot(zB - zA, FLOOR_H);
+      const ang = Math.atan2(FLOOR_H, zA - zB);
+      for (const x of [7.22, 8.48]) {
+        const s2 = box(0.08, 0.32, len, sideM, x, FLOOR_H / 2, (zA + zB) / 2);
+        s2.rotation.x = ang;
+        const rl = box(0.05, 0.05, len, trimM, x, FLOOR_H / 2 + 0.9, (zA + zB) / 2);
+        rl.rotation.x = ang;
+      }
+      box(1.3, 0.2, 1.4, sideM, 7.85, FLOOR_H - 0.1, zB - 0.7);
+      box(0.12, FLOOR_H + 0.5, 0.12, sideM, 8.5, (FLOOR_H - 0.5) / 2, zB - 1.3);
+    }
+
+    // ── cinematic outdoor environment ─────────────────────────────────────────
+    let grassM: MeshLambertMaterial | null = null;
+    let lampGlow: MeshLambertMaterial | null = null;
+    if (cinematic) {
+      const grass = box(70, 0.2, 70, mat('#d9b48f'), 0, -0.75, -8);
+      grassM = grass.material as MeshLambertMaterial;
+      box(70, 0.06, 2.6, mat('#e8d3b8'), 0, -0.62, 4.8);
+      box(70, 0.12, 0.2, mat('#b9a189'), 0, -0.6, 6.15);
+      box(70, 0.04, 9, mat('#4a4048'), 0, -0.64, 10.7);
+      const stripeM = mat('#f2c14e');
+      for (let x = -30; x < 30; x += 3) box(1.4, 0.01, 0.16, stripeM, x, -0.61, 10.7);
+      const poleM = mat('#2e211a');
+      lampGlow = mat('#ffe2a8', '#ffb347');
+      for (const x of [-12, -4, 4, 13]) {
+        box(0.12, 4.2, 0.12, poleM, x, 1.45, 7.6);
+        box(0.7, 0.08, 0.08, poleM, x - 0.3, 3.5, 7.6);
+        add(new Mesh(geo(new SphereGeometry(0.2, 12, 10)), lampGlow), x - 0.6, 3.35, 7.6);
+      }
+      for (const [x, z] of [[-8.6, 4.2], [-7.6, 4.4], [9.6, 4.2], [10.6, 4.4], [-9.4, -2], [-9.4, 1.5]] as const) {
+        add(new Mesh(geo(new CylinderGeometry(0.32, 0.25, 0.6, 12)), mat('#b5552f')), x, -0.3, z);
+        add(new Mesh(geo(new SphereGeometry(0.45, 12, 10)), mat('#5c8a3a')), x, 0.3, z);
+      }
+      for (const [x, w, h, c] of [[-15, 6, 5, '#b97a57'], [15, 6, 6, '#9e6b4f'], [0, 22, 5.5, '#c99a73']] as const)
+        box(w, h, 3, mat(c), x, h / 2 - 0.6, FLOOR_DZ - 9);
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // DESKS + ACTORS (workstation geometry identical, characters upgraded)
+    // ─────────────────────────────────────────────────────────────────────────
+    const legM = mat('#4b3b62');
+    const chairM = mat('#3a2a5c');
+    const shadowM = new MeshBasicMaterial({ color: '#1b1330', transparent: true, opacity: 0.14, depthWrite: false });
+    disposables.push(shadowM);
+    const nightLights = !!cinematic && !touch;
+    const perFloor = new Map<number, number>();
+
+    const loader = new GLTFLoader();
+
+    const actors: Actor[] = desks.map((d, i) => {
+      const { x, z } = d.desk;
+      const fg = floorGroups.get(d.desk.lantai) ?? floorGroups.get(1)!;
+      cur = fg;
+      const slotIdx = perFloor.get(d.desk.lantai) ?? 0;
+      perFloor.set(d.desk.lantai, slotIdx + 1);
+
+      // ── workstation geometry (unchanged) ───────────────────────────────────
+      const deskTop = box(1.4, 0.08, 0.76, mat('#c9a27c', '#000000'), x, 0.78, z);
+      box(1.3, 0.7, 0.05, legM, x, 0.38, z - 0.32);
+      box(0.06, 0.74, 0.66, woodM, x - 0.64, 0.38, z);
+      box(0.06, 0.74, 0.66, woodM, x + 0.64, 0.38, z);
+      box(0.66, 0.44, 0.05, trimM, x - 0.05, 1.12, z - 0.22);
+      const screen = box(0.6, 0.36, 0.01, mat('#1b1330', '#000000'), x - 0.05, 1.12, z - 0.19);
+      box(0.08, 0.16, 0.08, trimM, x - 0.05, 0.9, z - 0.22);
+      if (d.desk.room === 'toko' || d.desk.room === 'rapat')
+        box(0.36, 0.26, 0.04, trimM, x + 0.45, 1.02, z - 0.12).rotation.set(0, -0.5, 0);
+      box(0.52, 0.02, 0.18, mat('#efe9f6'), x - 0.05, 0.83, z + 0.08);
+      add(new Mesh(geo(new CylinderGeometry(0.06, 0.05, 0.12, 10)), mat(d.desk.color)), x + 0.5, 0.88, z + 0.15);
+      const book = box(0.34, 0.06, 0.26, mat('#f3355b'), x + 0.32, 0.86, z + 0.12);
+      const lamp = add(new Mesh(geo(new SphereGeometry(0.1, 12, 10)), mat('#fff3b0', '#ffcf4d')), x - 0.52, 1.1, z - 0.15);
+      box(0.04, 0.28, 0.04, trimM, x - 0.52, 0.96, z - 0.15);
+      let light: PointLight | null = null;
+      if (nightLights) {
+        light = new PointLight('#ffb35c', 0, 4.5, 1.6);
+        light.position.set(x - 0.4, 1.5, z + 0.2);
+        fg.add(light);
+      }
+      box(0.56, 0.08, 0.56, chairM, x, 0.5, z + 0.75);
+      box(0.56, 0.62, 0.08, chairM, x, 0.84, z + 1.03);
+      box(0.06, 0.46, 0.06, legM, x, 0.25, z + 0.75);
+      const sh = add(new Mesh(geo(new CircleGeometry(0.95, 24)), shadowM), x, 0.006, z + 0.3);
+      sh.rotation.x = -Math.PI / 2;
+
+      // ── character root ────────────────────────────────────────────────────
+      const root = new Group();
+      const seat = new Vector3(x, 0, z + 0.72);
+      root.position.copy(seat);
+
+      // ── primitive fallback character (always built) ───────────────────────
+      const shirt = mat(d.desk.color);
+      const pants = mat('#2b2340');
+      const skin = mat(SKIN[i % SKIN.length]!);
+      const body = add(new Mesh(geo(new CapsuleGeometry(0.23, 0.4, 4, 14)), shirt), 0, 0.92, 0, root);
+      const head = add(new Mesh(geo(new SphereGeometry(0.22, 18, 14)), skin), 0, 1.42, 0, root);
+      const hair = add(
+        new Mesh(geo(new SphereGeometry(0.235, 18, 14, 0, Math.PI * 2, 0, Math.PI / 1.8)), mat(HAIR[i % HAIR.length]!)),
+        0, 0.02, 0.02, head,
+      );
+      hair.rotation.x = 0.35;
+      const limb = (r: number, len: number, m: Material, px: number, py: number) => {
+        const g = new CapsuleGeometry(r, len, 3, 8);
+        g.translate(0, -len / 2 - r / 2, 0);
+        return add(new Mesh(geo(g), m), px, py, 0, root);
+      };
+      const armL = limb(0.07, 0.34, shirt, -0.29, 1.12);
+      const armR = limb(0.07, 0.34, shirt, 0.29, 1.12);
+      const legL = limb(0.085, 0.38, pants, -0.11, 0.62);
+      const legR = limb(0.085, 0.38, pants, 0.11, 0.62);
+
+      fg.add(root);
+      cur = scene;
+
+      // ── load GLB asynchronously (non-blocking, never crashes) ─────────────
+      const agenConfig = AGEN.find((a) => a.key === d.desk.key);
+      const actor: Actor = {
+        key: d.desk.key,
+        root,
+        body, head, armL, armR, legL, legR,
+        glbGroup: null,
+        mixer: null,
+        clips: [],
+        currentClipName: '',
+        celebrateQueued: false,
+        screen, deskTop, book, lamp, light,
+        seat,
+        label: new Vector3(),
+        phase: i * 1.7,
+        index: slotIdx,
+        floor: fg,
+        world: new Vector3(),
+      };
+
+      if (agenConfig) {
+        // GLB filenames use {key}_{first_word_of_nama_lowercase}.glb
+        // e.g. 'kasir' + 'Dina' → kasir_dina.glb; 'manajer' + 'Bu Ratna' → manajer_ratna.glb
+        const namaWords = agenConfig.nama.toLowerCase().split(/\s+/);
+        const namaSlug = namaWords.length > 1 ? namaWords[namaWords.length - 1] : namaWords[0];
+        const glbFilename = `${agenConfig.key}_${namaSlug ?? agenConfig.key}.glb`;
+        loader.load(
+          `/models/agents/${glbFilename}`,
+          (gltf) => {
+            // GLB loaded successfully — hide primitives, show GLB
+            const glbGroup = gltf.scene;
+            glbGroup.scale.setScalar(0.6);           // scale to fit office scene
+            glbGroup.position.set(0, 0, 0);
+            root.add(glbGroup);
+
+            // Hide primitive geometry
+            body.visible = false;
+            head.visible = false;
+            armL.visible = false;
+            armR.visible = false;
+            legL.visible = false;
+            legR.visible = false;
+
+            // Setup AnimationMixer
+            const mixer = new AnimationMixer(glbGroup);
+            actor.glbGroup = glbGroup;
+            actor.mixer = mixer;
+            actor.clips = gltf.animations;
+          },
+          undefined, // progress callback (unused)
+          (_err) => {
+            // Load failed — primitive fallback stays visible, actor unchanged
+          },
+        );
+      }
+
+      return actor;
+    });
+
+    // ── camera ────────────────────────────────────────────────────────────────
+    let portrait = false;
+    const fit = () => {
+      const w = el.clientWidth || 1;
+      const h = el.clientHeight || 1;
+      renderer.setSize(w, h, false);
+      const aspect = w / h;
+      portrait = !!cinematic && aspect < 0.8;
+      let halfW = cinematic ? (portrait ? 8.9 : 10.5) : 10.5;
+      let halfH = halfW / aspect;
+      const minH = cinematic ? (portrait ? 3 : 7.6) : 7.6;
+      if (halfH < minH) { halfH = minH; halfW = halfH * aspect; }
+      camera.left = -halfW;
+      camera.right = halfW;
+      camera.top = halfH;
+      camera.bottom = -halfH;
+      camera.updateProjectionMatrix();
+      live.current.dirty = true;
+    };
+    fit();
+    const ro = new ResizeObserver(fit);
+    ro.observe(el);
+    const reduce = !manual && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    const SHOT = 3.2;
+    const home = target.clone();
+    const shotAim = (i: number, out: Vector3): number => {
+      if (i < 0 || i % 3 === 0 || !actors.length) { out.copy(home); return 1.02; }
+      const shown = actors.filter((x) => x.root.visible);
+      const pick = (shown.length ? shown : actors)[(i * 2 + Math.floor(i / 3)) % (shown.length || actors.length)]!;
+      pick.floor.localToWorld(out.set(pick.root.position.x, 1.1, pick.root.position.z));
+      return portrait ? 2.0 : 2.0;
+    };
+    const aimA = new Vector3();
+    const aimB = new Vector3();
+    const look = new Vector3();
+    const placeCamera = (t: number) => {
+      const swing = reduce ? 0 : cinematic ? (portrait ? 0.14 : 0.32) * Math.sin(t * 0.21) : 0.03 * Math.sin(t * 0.15);
+      const a = (portrait ? 0.42 : Math.PI / 4) + swing;
+      let zoom = 1;
+      look.copy(home);
+      if (cinematic && !reduce) {
+        const i = Math.floor(t / SHOT);
+        const zA = shotAim(i - 1, aimA);
+        const zB = shotAim(i, aimB);
+        const f = Math.min(1, (t - i * SHOT) / 1.1);
+        const e = f * f * (3 - 2 * f);
+        look.copy(aimA).lerp(aimB, e);
+        zoom = (zA + (zB - zA) * e) * (1 + 0.03 * Math.sin(t * 0.5));
+      }
+      camera.position.set(look.x + 17 * Math.sin(a), look.y + 13.5, look.z + 17 * Math.cos(a));
+      camera.lookAt(look);
+      if (camera.zoom !== zoom) { camera.zoom = zoom; camera.updateProjectionMatrix(); }
+    };
+
+    const proj = new Vector3();
+    const place = (node: HTMLElement | null | undefined, at: Vector3) => {
+      if (!node) return;
+      proj.copy(at).project(camera);
+      const x = ((proj.x + 1) / 2) * el.clientWidth;
+      const y = ((1 - proj.y) / 2) * el.clientHeight;
+      node.style.transform = `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0)`;
+    };
+    const boardAt = new Vector3(BOARD.x, 2.75, Z0 + 0.1);
+    const dest = new Vector3();
+    const pos = new Vector3();
+    const ahead = new Vector3();
+    const tmp = new Vector3();
+    const CORRIDOR = 0.05;
+    const pathAt = (from: Vector3, to: Vector3, k: number, out: Vector3, _scratch: Vector3) => {
+      const p0 = from;
+      const p1x = from.x, p1z = CORRIDOR;
+      const p2x = to.x, p2z = CORRIDOR;
+      const l1 = Math.abs(p1z - p0.z);
+      const l2 = Math.abs(p2x - p1x);
+      const l3 = Math.abs(to.z - p2z);
+      const L = l1 + l2 + l3 || 1;
+      let d = k * L;
+      if (d <= l1) return out.set(p0.x, 0, p0.z + Math.sign(p1z - p0.z) * d);
+      d -= l1;
+      if (d <= l2) return out.set(p1x + Math.sign(p2x - p1x) * d, 0, p1z);
+      d -= l2;
+      return out.set(p2x, 0, p2z + Math.sign(to.z - p2z) * Math.min(d, l3));
+    };
+
+    // ── GLB animation helpers ─────────────────────────────────────────────────
+    const findClip = (clips: AnimationClip[], name: string): AnimationClip | undefined =>
+      clips.find((c) => c.name === name || c.name.toLowerCase() === name.toLowerCase());
+
+    const playGlbClip = (actor: Actor, state: AgentState) => {
+      const { mixer, clips } = actor;
+      if (!mixer || !clips.length) return;
+      const { name, loop, timeScale } = clipNameForState(state);
+      if (actor.currentClipName === name && state !== 'completed' && state !== 'laporan') return;
+
+      // Stop all current actions
+      mixer.stopAllAction();
+      actor.celebrateQueued = false;
+
+      const clip = findClip(clips, name);
+      if (!clip) return;
+
+      actor.currentClipName = name;
+
+      if ((state === 'completed' || state === 'laporan') && !actor.celebrateQueued) {
+        // Play "Talk" first, then chain "Celebrate" once
+        const talkAction = mixer.clipAction(clip);
+        talkAction.setLoop(LoopOnce, 1);
+        talkAction.clampWhenFinished = true;
+        talkAction.timeScale = timeScale;
+        talkAction.play();
+
+        const celebrateClip = findClip(clips, 'Celebrate');
+        if (celebrateClip) {
+          actor.celebrateQueued = true;
+          const onFinished = (e: { action: AnimationAction }) => {
+            if (e.action === talkAction) {
+              mixer.removeEventListener('finished', onFinished);
+              actor.celebrateQueued = false;
+              const celebAction = mixer.clipAction(celebrateClip);
+              celebAction.setLoop(LoopOnce, 1);
+              celebAction.clampWhenFinished = true;
+              celebAction.reset().play();
+            }
+          };
+          mixer.addEventListener('finished', onFinished);
+        }
+      } else {
+        const action = mixer.clipAction(clip);
+        action.setLoop(loop ? LoopRepeat : LoopOnce, loop ? Infinity : 1);
+        action.clampWhenFinished = !loop;
+        action.timeScale = timeScale;
+        action.play();
+      }
+    };
+
+    // ── main state/frame logic ────────────────────────────────────────────────
+    let lastNight: boolean | null = null;
+    let lastTime = 0;
+
+    const applyState = (t: number) => {
+      const { desks: list, night: isNight, boardCount: count } = live.current;
+      const dt = t - lastTime;
+      lastTime = t;
+
+      if (isNight !== lastNight) {
+        lastNight = isNight;
+        hemi.intensity = isNight ? 0.35 : 1.5;
+        hemi.color.set(isNight ? '#7d8cff' : '#fff6ea');
+        sun.intensity = isNight ? 0.15 : 1.7;
+        sun.color.set(isNight ? '#8fa2ff' : '#ffe2b8');
+        amb.intensity = isNight ? 0.22 : 0.35;
+        glassM.color.set(isNight ? '#18204a' : '#bfe3ff');
+        glassM.emissive.set(isNight ? '#10173a' : '#7fb8e6');
+        for (const f of floors) f.m.color.set(isNight ? f.r.floorNight : f.r.floor);
+        grassM?.color.set(isNight ? '#3a2e2a' : '#d9b48f');
+        lampGlow?.emissive.set(isNight ? '#ffb347' : '#a86a2a');
+        lineM.color.set(isNight ? '#3c3029' : '#cdb79c');
+        for (const p of pendant) (p.material as MeshLambertMaterial).emissive.set(isNight ? '#ffb35c' : '#000000');
+        if (scene.fog) (scene.fog as Fog).color.set(isNight ? '#1d1220' : '#f4b98a');
+      }
+
+      notes.forEach((n, i) => (n.visible = i % noteColors.length < count));
+
+      for (const a of actors) {
+        const d = list.find((x) => x.desk.key === a.key);
+        const act = d?.doing.activity ?? 'pulang';
+        const away = act === 'pulang';
+        a.root.visible = !away;
+
+        const busy = act === 'kerja' || act === 'laporan';
+        const sm = a.screen.material as MeshLambertMaterial;
+        sm.emissive.set(
+          busy ? (act === 'laporan' ? '#7bdff2' : '#66e3a5') :
+            act === 'belajar' ? '#ffd166' :
+              act === 'siaga' ? '#5b4a92' : '#000000',
+        );
+        sm.emissiveIntensity = busy ? 0.8 + (reduce ? 0 : 0.2 * Math.sin(t * 9 + a.phase)) : 0.6;
+        a.book.visible = act === 'belajar';
+        const lampOn = act === 'belajar' || (isNight && !away);
+        a.lamp.visible = lampOn;
+        if (a.light) a.light.intensity = lampOn && isNight ? 2.2 : 0;
+        const dm = a.deskTop.material as MeshLambertMaterial;
+        if (d?.urgent.length) {
+          dm.emissive.set('#f3355b');
+          dm.emissiveIntensity = reduce ? 0.5 : 0.25 + 0.35 * (0.5 + 0.5 * Math.sin(t * 6));
+        } else dm.emissiveIntensity = 0;
+
+        // GLB animation update
+        if (a.mixer) {
+          a.mixer.update(dt);
+          // Map office activity → GLB clip
+          const glbState: AgentState =
+            act === 'kerja' ? 'working' :
+              act === 'laporan' ? 'completed' :
+                act === 'belajar' ? 'belajar' :
+                  act === 'siaga' ? 'idle' :
+                    act === 'pulang' ? 'pulang' : 'idle';
+          playGlbClip(a, glbState);
+        }
+
+        // ── position + primitive animation (unchanged logic) ─────────────────
+        let k = 0;
+        let walking = false;
+        let going = true;
+        let spot: IdleSpot = 'meja';
+        if (cinematic && act === 'siaga' && !reduce) {
+          const idle = idleAt(a.key, t);
+          k = idle.k;
+          walking = idle.walking;
+          spot = idle.spot;
+          going = walking && idleAt(a.key, t + 0.05).k >= k;
+        }
+        const standing = k > 0;
+        const slot = (a.index % 3) - 1;
+        if (spot === 'papan') dest.set(BOARD.x + slot * 0.75, 0, Z0 + 1.15);
+        else if (spot === 'kopi') dest.set(-1.0 + slot * 0.45, 0, Z0 + 1.0);
+        else if (spot === 'sofa') dest.set(0.1 + slot * 0.55, 0, 2.2);
+        else dest.copy(a.seat);
+        pathAt(a.seat, dest, k, pos, ahead);
+        a.root.position.copy(pos);
+        const sitting = !standing || (spot === 'sofa' && k === 1);
+        if (standing && walking) {
+          pathAt(a.seat, dest, Math.min(1, Math.max(0, k + (going ? 0.02 : -0.02))), ahead, tmp);
+          const dx = ahead.x - pos.x;
+          const dz = ahead.z - pos.z;
+          if (dx * dx + dz * dz > 1e-8) a.root.rotation.set(0, Math.atan2(-dx, -dz), 0);
+        } else if (spot === 'sofa' && k === 1) a.root.rotation.set(0, Math.PI, 0);
+        else a.root.rotation.set(0, 0, 0);
+        a.root.position.y = spot === 'sofa' && k === 1 ? -0.05 : 0;
+        a.label.set(pos.x, standing && !sitting ? 1.95 : (cinematic ? 1.75 : 2.1), pos.z);
+
+        // Primitive fallback animation (only when GLB not loaded)
+        if (!a.glbGroup) {
+          if (reduce) continue;
+          const s = Math.sin(t * 9 + a.phase);
+          if (!sitting) {
+            const bob = walking ? 0.03 * Math.abs(s) : 0;
+            a.body.position.y = 0.98 + bob;
+            a.head.position.y = 1.48 + bob;
+            a.armL.position.y = a.armR.position.y = 1.18 + bob;
+            a.legL.position.y = a.legR.position.y = 0.7;
+            a.legL.rotation.set(walking ? 0.6 * s : 0, 0, 0);
+            a.legR.rotation.set(walking ? -0.6 * s : 0, 0, 0);
+            a.armL.rotation.set(walking ? -0.5 * s : 0, 0, 0.08);
+            a.armR.rotation.set(walking ? 0.5 * s : 0, 0, -0.08);
+            a.head.rotation.set(walking ? 0 : -0.15, 0, 0);
+          } else {
+            a.legL.position.y = a.legR.position.y = 0.62;
+            a.legL.rotation.set(-1.4, 0, 0);
+            a.legR.rotation.set(-1.4, 0, 0);
+            a.body.position.y = 0.92;
+            a.head.position.y = 1.42;
+            a.armL.position.y = a.armR.position.y = 1.12;
+            if (busy) {
+              a.armL.rotation.set(-1.15 + 0.12 * Math.sin(t * 16 + a.phase), 0, 0.1);
+              a.armR.rotation.set(-1.15 + 0.12 * Math.sin(t * 16 + a.phase + 2), 0, -0.1);
+              a.body.position.y = 0.92 + 0.012 * Math.abs(s);
+              a.head.rotation.set(0.1 + 0.04 * Math.sin(t * 3 + a.phase), 0.08 * Math.sin(t * 1.3 + a.phase), 0);
+            } else if (act === 'belajar') {
+              a.armL.rotation.set(-0.9, 0, 0.2);
+              a.armR.rotation.set(-0.9 + 0.2 * Math.max(0, Math.sin(t * 0.8 + a.phase)), 0, -0.2);
+              a.head.rotation.set(0.38 + 0.04 * Math.sin(t * 1.2 + a.phase), 0.32, 0);
+            } else {
+              a.armL.rotation.set(-0.5, 0, 0.12);
+              a.armR.rotation.set(-0.5, 0, -0.12);
+              a.body.position.y = 0.92 + 0.01 * Math.sin(t * 1.6 + a.phase);
+              a.head.rotation.set(0, 0.5 * Math.sin(t * 0.4 + a.phase), 0);
+            }
+          }
+        }
+      }
+
+      // Update OrbitControls if present
+      orbitControls?.update();
+    };
+
+    const draw = (t: number) => {
+      placeCamera(t);
+      applyState(t);
+      renderer.render(scene, camera);
+      for (const a of actors) place(anchors.current?.get(a.key), a.floor.localToWorld(a.world.copy(a.label)));
+      place(boardAnchor.current, boardAt);
+      live.current.dirty = false;
+    };
+    if (drive) drive.current = draw;
+
+    // ── render loop ───────────────────────────────────────────────────────────
+    let raf = 0;
+    let running = true;
+    let visible = true;
+    let last = 0;
+    const minGap = touch ? 1000 / 30 : 0;
+    const start = performance.now();
+    const frame = (now: number) => {
+      raf = 0;
+      if (!running || !visible || document.hidden) return;
+      if (now - last >= minGap) { last = now; draw((now - start) / 1000); }
+      if (!reduce) raf = requestAnimationFrame(frame);
+    };
+    const kick = () => { if (!manual && !raf && running) raf = requestAnimationFrame(frame); };
+    const poll = reduce ? window.setInterval(() => live.current.dirty && kick(), 250) : 0;
+    const io = new IntersectionObserver(([e]) => {
+      visible = !!e?.isIntersecting;
+      if (visible) kick();
+    });
+    io.observe(el);
+    const onVis = () => !document.hidden && kick();
+    document.addEventListener('visibilitychange', onVis);
+    renderer.domElement.addEventListener('webglcontextlost', (e) => {
+      e.preventDefault();
+      onFail?.();
+    });
+    if (manual) draw(0);
+    kick();
+    onReady?.();
+
+    // ── cleanup ───────────────────────────────────────────────────────────────
+    return () => {
+      running = false;
+      if (drive) drive.current = null;
+      if (raf) cancelAnimationFrame(raf);
+      window.clearInterval(poll);
+      io.disconnect();
+      ro.disconnect();
+      orbitControls?.dispose();
+      document.removeEventListener('visibilitychange', onVis);
+      for (const a of actors) a.mixer?.stopAllAction();
+      for (const d of disposables) d.dispose();
+      renderer.dispose();
+      renderer.domElement.remove();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [desks.map((d) => d.desk.key).join(','), cinematic, manual]);
+
+  return <div ref={host} className="ko-canvas" />;
+}
+
+void smooth; // suppress unused warning — kept for parity with OfficeScene.tsx
