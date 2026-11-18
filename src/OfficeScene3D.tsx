@@ -56,7 +56,7 @@ import { idleAt, type DeskState, type IdleSpot } from './office';
  * Calls /api/v1/agents and maps agent_key → state string.
  * Returns empty object on 404 / any network failure.
  */
-export async function fetchAgentStates(): Promise<Record<string, string>> {
+async function fetchAgentStates(): Promise<Record<string, string>> {
   try {
     const res = await fetch('/api/v1/agents');
     if (!res.ok) return {};
