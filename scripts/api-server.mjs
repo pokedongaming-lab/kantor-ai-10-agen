@@ -14,6 +14,7 @@ import {
   runAutonomousCycle
 } from './autonomous-daemon.mjs';
 import { renderMalikiVideo, MALIKI_STYLES } from './maliki-video-engine.mjs';
+import { getTokenMetrics } from './token-tracker.mjs';
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -410,6 +411,16 @@ app.get('/api/v1/settings', async (req, res) => {
   try {
     const settingsRes = await query('SELECT * FROM system_settings');
     res.json({ success: true, data: settingsRes.rows });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// 11. TOKEN USAGE MONITOR
+app.get('/api/v1/tokens', (req, res) => {
+  try {
+    const metrics = getTokenMetrics();
+    res.json({ success: true, data: metrics });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
   }

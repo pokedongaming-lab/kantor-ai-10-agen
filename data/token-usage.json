@@ -1,0 +1,104 @@
+{
+  "daily_budget": 100000,
+  "updated_at": "2026-11-18T13:47:10.794Z",
+  "summary": {
+    "total_tokens": 230,
+    "total_calls": 1,
+    "by_agent": {
+      "kasir": {
+        "calls": 0,
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0,
+        "last_model": "-",
+        "last_active": null
+      },
+      "pesanan": {
+        "calls": 0,
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0,
+        "last_model": "-",
+        "last_active": null
+      },
+      "cs": {
+        "calls": 0,
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0,
+        "last_model": "-",
+        "last_active": null
+      },
+      "stok": {
+        "calls": 0,
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0,
+        "last_model": "-",
+        "last_active": null
+      },
+      "keuangan": {
+        "calls": 0,
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0,
+        "last_model": "-",
+        "last_active": null
+      },
+      "riset": {
+        "calls": 1,
+        "prompt_tokens": 150,
+        "completion_tokens": 80,
+        "total_tokens": 230,
+        "last_model": "combo03",
+        "last_active": "2026-11-18T13:47:10.793Z"
+      },
+      "konten": {
+        "calls": 0,
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0,
+        "last_model": "-",
+        "last_active": null
+      },
+      "desain": {
+        "calls": 0,
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0,
+        "last_model": "-",
+        "last_active": null
+      },
+      "laporan": {
+        "calls": 0,
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0,
+        "last_model": "-",
+        "last_active": null
+      },
+      "manajer": {
+        "calls": 0,
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0,
+        "last_model": "-",
+        "last_active": null
+      }
+    },
+    "by_model": {
+      "combo03": 230
+    }
+  },
+  "logs": [
+    {
+      "id": "TOK-1795009630793-93",
+      "timestamp": "2026-11-18T13:47:10.793Z",
+      "agent_key": "riset",
+      "model": "combo03",
+      "prompt_tokens": 150,
+      "completion_tokens": 80,
+      "total_tokens": 230
+    }
+  ]
+}

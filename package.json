@@ -10,6 +10,7 @@
     "dev": "vite --port 5173",
     "build": "tsc --noEmit && vite build",
     "test": "node scripts/test.mjs",
+    "tokens": "node scripts/token-monitor.mjs",
     "rekam": "node scripts/rekam.mjs",
     "publish": "node scripts/auto-publish.mjs",
     "publish:dry": "node scripts/auto-publish.mjs --dry-run",

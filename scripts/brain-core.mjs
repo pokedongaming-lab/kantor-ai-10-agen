@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import dotenv from 'dotenv';
+import { recordTokenUsage } from './token-tracker.mjs';
 dotenv.config();
 
 const API_URL = process.env.ROUTER_API_URL || 'http://localhost:20128/v1';
@@ -60,6 +61,11 @@ export async function askLLM(agentKey, systemPrompt, userMessage) {
       const json = await res.json();
       const content = json.choices?.[0]?.message?.content;
       if (content) {
+        try {
+          recordTokenUsage(agentKey, model, json.usage, `${systemPrompt}\n${userMessage}`, content);
+        } catch (trkErr) {
+          // Token tracking failure must never block LLM response
+        }
         return content;
       }
     } catch (err) {

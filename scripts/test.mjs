@@ -82,4 +82,28 @@ t('db.mjs query fallback standalone', async () => {
   assert.ok(contentsRes.rows.length >= 4, 'Harus mereturn konten pipeline');
 });
 
+t('token-tracker.mjs pelacakan pemakaian token per agen', async () => {
+  const { recordTokenUsage, getTokenMetrics, AGENT_INFO } = await import('./token-tracker.mjs');
+  
+  // Pastikan info 10 agen terdaftar lengkap
+  assert.equal(Object.keys(AGENT_INFO).length, 10, 'Harus ada tepat 10 agen');
+  
+  // Simulasi pencatatan pemakaian token untuk agen riset
+  const rec = recordTokenUsage('riset', 'combo03', { prompt_tokens: 150, completion_tokens: 80, total_tokens: 230 });
+  assert.equal(rec.totalTokens, 230, 'Total token yang tercatat harus 230');
+
+  // Ambil metrik agregat
+  const metrics = getTokenMetrics();
+  assert.ok(metrics.total_tokens_used > 0, 'Total tokens used harus bertambah');
+  assert.ok(metrics.daily_budget >= 100000, 'Daily budget default harus 100k');
+  assert.ok(['HEALTHY', 'WARNING', 'CRITICAL'].includes(metrics.status), 'Status harus valid');
+  assert.equal(metrics.by_agent.length, 10, 'Metrik per-agen harus berisi 10 agen');
+  
+  const risetRow = metrics.by_agent.find(a => a.agent_key === 'riset');
+  assert.ok(risetRow, 'Baris agen riset harus ditemukan');
+  assert.equal(risetRow.name, 'Raka');
+  assert.equal(risetRow.lantai, 2);
+  assert.ok(risetRow.calls >= 1);
+});
+
 console.log(`${n} tes lulus`);

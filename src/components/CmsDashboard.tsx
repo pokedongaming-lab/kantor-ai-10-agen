@@ -272,6 +272,37 @@ const DEFAULT_RESEARCH = {
   }
 };
 
+const DEFAULT_TOKEN_METRICS = {
+  daily_budget: 100000,
+  total_tokens_used: 14280,
+  total_calls: 16,
+  budget_used_pct: 14.3,
+  budget_remaining: 85720,
+  status: 'HEALTHY',
+  by_agent: [
+    { agent_key: 'konten', name: 'Sekar', role: 'Scriptwriter Anti-Slop', lantai: 2, calls: 4, prompt_tokens: 3200, completion_tokens: 2800, total_tokens: 6000, share_pct: '42.0%', last_model: 'combo03', last_active: 'Baru saja', status: 'AMAN' },
+    { agent_key: 'riset', name: 'Raka', role: 'AI Trend Intelligence', lantai: 2, calls: 3, prompt_tokens: 2100, completion_tokens: 1450, total_tokens: 3550, share_pct: '24.9%', last_model: 'combo03', last_active: '5 mnt lalu', status: 'AMAN' },
+    { agent_key: 'laporan', name: 'Doni', role: 'QA & Fact Checker', lantai: 2, calls: 3, prompt_tokens: 1800, completion_tokens: 620, total_tokens: 2420, share_pct: '16.9%', last_model: 'combo01', last_active: '12 mnt lalu', status: 'AMAN' },
+    { agent_key: 'manajer', name: 'Bu Ratna', role: 'Chief Strategist & GM', lantai: 2, calls: 2, prompt_tokens: 820, completion_tokens: 410, total_tokens: 1230, share_pct: '8.6%', last_model: 'combo03', last_active: '18 mnt lalu', status: 'AMAN' },
+    { agent_key: 'desain', name: 'Lita', role: 'Visual & Thumbnail Designer', lantai: 2, calls: 1, prompt_tokens: 410, completion_tokens: 220, total_tokens: 630, share_pct: '4.4%', last_model: 'combo05', last_active: '25 mnt lalu', status: 'AMAN' },
+    { agent_key: 'pesanan', name: 'Rina', role: 'Jadwal & Auto-Publisher', lantai: 1, calls: 1, prompt_tokens: 180, completion_tokens: 90, total_tokens: 270, share_pct: '1.9%', last_model: 'combo01', last_active: '30 mnt lalu', status: 'AMAN' },
+    { agent_key: 'kasir', name: 'Dina', role: 'Analisis Metrik & Views', lantai: 1, calls: 1, prompt_tokens: 120, completion_tokens: 60, total_tokens: 180, share_pct: '1.3%', last_model: 'combo01', last_active: '40 mnt lalu', status: 'AMAN' },
+    { agent_key: 'cs', name: 'Fajar', role: 'Community & DM Interaksi', lantai: 1, calls: 0, prompt_tokens: 0, completion_tokens: 0, total_tokens: 0, share_pct: '0.0%', last_model: '-', last_active: '-', status: 'AMAN' },
+    { agent_key: 'stok', name: 'Bayu', role: 'Bank Aset Media', lantai: 1, calls: 0, prompt_tokens: 0, completion_tokens: 0, total_tokens: 0, share_pct: '0.0%', last_model: '-', last_active: '-', status: 'AMAN' },
+    { agent_key: 'keuangan', name: 'Sari', role: 'Affiliate & Sponsor Tracker', lantai: 1, calls: 0, prompt_tokens: 0, completion_tokens: 0, total_tokens: 0, share_pct: '0.0%', last_model: '-', last_active: '-', status: 'AMAN' },
+  ],
+  by_model: {
+    'combo03 (Gemini 3.8 Flash)': 10780,
+    'combo01 (Solar Mini)': 2870,
+    'combo05 (StepFun 3.7 Flash)': 630
+  },
+  recent_logs: [
+    { id: 'TOK-101', timestamp: '2026-11-18 21:00:12', agent_key: 'konten', model: 'combo03', prompt_tokens: 820, completion_tokens: 650, total_tokens: 1470 },
+    { id: 'TOK-100', timestamp: '2026-11-18 20:55:04', agent_key: 'riset', model: 'combo03', prompt_tokens: 710, completion_tokens: 520, total_tokens: 1230 },
+  ],
+  updated_at: new Date().toISOString()
+};
+
 export interface CmsDashboardProps {
   onToggleOffice3D?: () => void;
 }
@@ -293,6 +324,7 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ onToggleOffice3D }) 
   const [monetizationItems, setMonetizationItems] = useState<any[]>(DEFAULT_MONETIZATION);
   const [analyticsData, setAnalyticsData] = useState<any>(DEFAULT_ANALYTICS);
   const [researchData, setResearchData] = useState<any>(DEFAULT_RESEARCH);
+  const [tokenMetrics, setTokenMetrics] = useState<any>(DEFAULT_TOKEN_METRICS);
   const [autonomousStatus, setAutonomousStatus] = useState<any>({ enabled: true, running: false, cycleCount: 1 });
 
   // Form states for workflow trigger
@@ -317,11 +349,13 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ onToggleOffice3D }) 
     fetchMonetization();
     fetchAnalytics();
     fetchResearch();
+    fetchTokens();
     fetchAutonomousStatus();
 
-    // Polling status otonom setiap 10 detik
+    // Polling status otonom & token setiap 10 detik
     const timer = setInterval(() => {
       fetchAutonomousStatus();
+      fetchTokens();
     }, 10000);
     return () => clearInterval(timer);
   }, []);
@@ -420,6 +454,14 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ onToggleOffice3D }) 
     } catch (e) {
       console.error('Error fetch research:', e);
     }
+  };
+
+  const fetchTokens = async () => {
+    try {
+      const res = await fetch(`${API_BASE}/tokens`);
+      const json = await res.json();
+      if (json.success) setTokenMetrics(json.data);
+    } catch (e) {}
   };
 
   const fetchAutonomousStatus = async () => {
@@ -642,6 +684,7 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ onToggleOffice3D }) 
     community: 'Komunitas & sentimen — Fajar',
     monetization: 'Kolaborasi & afiliasi — Sari',
     analytics: 'Analitik performa — Dina',
+    tokens: 'Monitor Pemakaian Token Agen',
     settings: 'Pengaturan & model AI',
   };
 
@@ -662,6 +705,7 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ onToggleOffice3D }) 
       { key: 'analytics', label: 'Analitik — Dina' },
     ]},
     { group: 'Sistem', items: [
+      { key: 'tokens', label: 'Token Monitor' },
       ...(onToggleOffice3D ? [{ key: '3d', label: '3D Office View' }] : []),
       { key: 'settings', label: 'Pengaturan & Model' },
     ]},
@@ -1522,6 +1566,201 @@ export const CmsDashboard: React.FC<CmsDashboardProps> = ({ onToggleOffice3D }) 
                   ))}
                 </div>
               </div>
+            </div>
+          )}
+
+          {/* ═══ TOKEN USAGE MONITOR ═══ */}
+          {activeTab === 'tokens' && tokenMetrics && (
+            <div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+                <div>
+                  <h3 style={{ margin: 0, fontSize: 18, fontWeight: 700, color: 'var(--text-primary)' }}>
+                    Monitor Kuota & Token 10 Agen
+                  </h3>
+                  <p style={{ margin: '4px 0 0', fontSize: 13, color: 'var(--text-secondary)' }}>
+                    Pelacakan konsumsi LLM real-time per agen dan kontrol anggaran harian studio
+                  </p>
+                </div>
+                <button
+                  onClick={() => { fetchTokens(); showNotify('info', 'Data pemakaian token diperbarui.'); }}
+                  className={css.btnPrimary}
+                  style={{ display: 'flex', alignItems: 'center', gap: 6 }}
+                >
+                  <span>🔄 Refresh Metrik</span>
+                </button>
+              </div>
+
+              {/* Stat Cards */}
+              <div className={css.statsGrid}>
+                <MetricCard
+                  label="Total Token Terpakai"
+                  value={tokenMetrics.total_tokens_used?.toLocaleString() || 0}
+                  sub={`Dari ${tokenMetrics.total_calls || 0} panggilan LLM`}
+                  color="var(--accent)"
+                />
+                <MetricCard
+                  label="Anggaran Kuota Harian"
+                  value={tokenMetrics.daily_budget?.toLocaleString() || 0}
+                  sub="Batas aman harian studio"
+                  color="#8B5CF6"
+                />
+                <MetricCard
+                  label="Sisa Kuota Hari Ini"
+                  value={tokenMetrics.budget_remaining?.toLocaleString() || 0}
+                  sub={`${(100 - (tokenMetrics.budget_used_pct || 0)).toFixed(1)}% kapasitas tersedia`}
+                  color="var(--success)"
+                />
+                <MetricCard
+                  label="Status Kuota"
+                  value={tokenMetrics.status === 'HEALTHY' ? 'AMAN' : (tokenMetrics.status === 'WARNING' ? 'WASPADA' : 'KRITIS')}
+                  sub={tokenMetrics.budget_used_pct >= 90 ? 'Mendekati limit harian' : 'Konsumsi token wajar'}
+                  color={tokenMetrics.budget_used_pct >= 90 ? 'var(--danger)' : tokenMetrics.budget_used_pct >= 70 ? 'var(--warning)' : 'var(--success)'}
+                />
+              </div>
+
+              {/* Progress & Distribution Card */}
+              <div className={css.tokenProgressCard}>
+                <div className={css.tokenProgressHeader}>
+                  <div className={css.tokenProgressTitle}>
+                    Konsumsi Anggaran Token Hari Ini
+                  </div>
+                  <div
+                    className={css.tokenProgressPct}
+                    style={{
+                      color: tokenMetrics.budget_used_pct >= 90 ? 'var(--danger)' : tokenMetrics.budget_used_pct >= 70 ? 'var(--warning)' : 'var(--success)'
+                    }}
+                  >
+                    {tokenMetrics.budget_used_pct}%
+                  </div>
+                </div>
+
+                <div className={css.tokenTrack}>
+                  <div
+                    className={css.tokenFill}
+                    style={{
+                      width: `${Math.min(100, Math.max(2, tokenMetrics.budget_used_pct))}%`,
+                      backgroundColor: tokenMetrics.budget_used_pct >= 90 ? 'var(--danger)' : tokenMetrics.budget_used_pct >= 70 ? 'var(--warning)' : 'var(--success)'
+                    }}
+                  />
+                </div>
+
+                <div className={css.tokenSubInfo}>
+                  <span>Terpakai: <strong>{tokenMetrics.total_tokens_used?.toLocaleString()} token</strong></span>
+                  <span>Maksimal: <strong>{tokenMetrics.daily_budget?.toLocaleString()} token/hari</strong></span>
+                </div>
+
+                {/* Model Distribution Pills */}
+                {tokenMetrics.by_model && Object.keys(tokenMetrics.by_model).length > 0 && (
+                  <div className={css.modelBadgeContainer}>
+                    <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-tertiary)', alignSelf: 'center' }}>
+                      Distribusi Model:
+                    </span>
+                    {Object.entries(tokenMetrics.by_model).map(([model, tok]: [string, any]) => (
+                      <div key={model} className={css.modelBadgeItem}>
+                        <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>{model}:</span>
+                        <span style={{ color: 'var(--accent)', fontFamily: 'var(--font-mono)' }}>{tok.toLocaleString()} tok</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Table of 10 Agents */}
+              <div className={css.ideasTableContainer}>
+                <table className={css.tokenTable}>
+                  <thead>
+                    <tr>
+                      <th>Agen & Peran</th>
+                      <th>Lantai</th>
+                      <th>Calls</th>
+                      <th>Prompt</th>
+                      <th>Completion</th>
+                      <th>Total Token</th>
+                      <th>Porsi</th>
+                      <th>Model Terakhir</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {tokenMetrics.by_agent?.map((ag: any) => (
+                      <tr key={ag.agent_key}>
+                        <td>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                            <span className={css.agentKeyTag}>{ag.agent_key}</span>
+                            <div>
+                              <div style={{ fontWeight: 700, color: 'var(--text-primary)' }}>{ag.name}</div>
+                              <div style={{ fontSize: 11, color: 'var(--text-tertiary)' }}>{ag.role}</div>
+                            </div>
+                          </div>
+                        </td>
+                        <td>
+                          <span style={{ fontSize: 12, fontWeight: 600 }}>
+                            {ag.lantai === 2 ? 'L2 (Kreatif)' : 'L1 (Distribusi)'}
+                          </span>
+                        </td>
+                        <td style={{ fontFamily: 'var(--font-mono)' }}>{ag.calls}</td>
+                        <td style={{ fontFamily: 'var(--font-mono)' }}>{ag.prompt_tokens?.toLocaleString() || 0}</td>
+                        <td style={{ fontFamily: 'var(--font-mono)' }}>{ag.completion_tokens?.toLocaleString() || 0}</td>
+                        <td style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, color: 'var(--text-primary)' }}>
+                          {ag.total_tokens?.toLocaleString() || 0}
+                        </td>
+                        <td>
+                          <span style={{ fontWeight: 600, color: 'var(--accent)' }}>{ag.share_pct}</span>
+                        </td>
+                        <td>
+                          <code style={{ fontSize: 11, color: 'var(--warning)' }}>{ag.last_model || '-'}</code>
+                        </td>
+                        <td>
+                          <span className={ag.status === 'KRITIS' ? css.badgeKritis : ag.status === 'WASPADA' ? css.badgeWaspada : css.badgeAman}>
+                            {ag.status || 'AMAN'}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Recent Activity Logs */}
+              {tokenMetrics.recent_logs && tokenMetrics.recent_logs.length > 0 && (
+                <div style={{ marginTop: 24, background: 'var(--bg-surface)', padding: 20, borderRadius: 'var(--radius-md)', border: '1px solid var(--border-subtle)' }}>
+                  <h4 style={{ margin: '0 0 12px', fontSize: 14, fontWeight: 700, color: 'var(--text-primary)' }}>
+                    Riwayat Transaksi Token Terkini
+                  </h4>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                    {tokenMetrics.recent_logs.slice(0, 5).map((log: any) => (
+                      <div
+                        key={log.id}
+                        style={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          padding: '8px 12px',
+                          background: 'var(--bg-inset)',
+                          borderRadius: 6,
+                          fontSize: 12
+                        }}
+                      >
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                          <span className={css.agentKeyTag}>{log.agent_key}</span>
+                          <span style={{ color: 'var(--warning)', fontFamily: 'var(--font-mono)' }}>{log.model}</span>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+                          <span style={{ color: 'var(--text-secondary)' }}>
+                            Prompt: {log.prompt_tokens} | Comp: {log.completion_tokens}
+                          </span>
+                          <span style={{ fontWeight: 700, color: 'var(--accent)', fontFamily: 'var(--font-mono)' }}>
+                            +{log.total_tokens} tok
+                          </span>
+                          <span style={{ fontSize: 11, color: 'var(--text-tertiary)' }}>
+                            {new Date(log.timestamp).toLocaleTimeString('id-ID')}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
