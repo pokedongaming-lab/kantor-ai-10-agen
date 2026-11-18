@@ -1,9 +1,9 @@
 {
   "daily_budget": 100000,
-  "updated_at": "2026-11-18T14:32:54.114Z",
+  "updated_at": "2026-11-18T14:56:15.843Z",
   "summary": {
-    "total_tokens": 460,
-    "total_calls": 2,
+    "total_tokens": 920,
+    "total_calls": 4,
     "by_agent": {
       "kasir": {
         "calls": 0,
@@ -46,12 +46,12 @@
         "last_active": null
       },
       "riset": {
-        "calls": 2,
-        "prompt_tokens": 300,
-        "completion_tokens": 160,
-        "total_tokens": 460,
+        "calls": 4,
+        "prompt_tokens": 600,
+        "completion_tokens": 320,
+        "total_tokens": 920,
         "last_model": "combo03",
-        "last_active": "2026-11-18T14:32:54.114Z"
+        "last_active": "2026-11-18T14:56:15.843Z"
       },
       "konten": {
         "calls": 0,
@@ -87,10 +87,28 @@
       }
     },
     "by_model": {
-      "combo03": 460
+      "combo03": 920
     }
   },
   "logs": [
+    {
+      "id": "TOK-1795013775843-289",
+      "timestamp": "2026-11-18T14:56:15.843Z",
+      "agent_key": "riset",
+      "model": "combo03",
+      "prompt_tokens": 150,
+      "completion_tokens": 80,
+      "total_tokens": 230
+    },
+    {
+      "id": "TOK-1795012396019-236",
+      "timestamp": "2026-11-18T14:33:16.019Z",
+      "agent_key": "riset",
+      "model": "combo03",
+      "prompt_tokens": 150,
+      "completion_tokens": 80,
+      "total_tokens": 230
+    },
     {
       "id": "TOK-1795012374114-453",
       "timestamp": "2026-11-18T14:32:54.114Z",
