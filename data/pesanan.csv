@@ -1,0 +1,5 @@
+id,pelanggan,produk,jumlah,jam_kirim,bayar,target_handle
+P01,TikTok Feed,Tutorial DeepSeek R1 di HP,1 video,12:00,auto_publish,@indostill.id
+P02,IG Reels,3 Tools AI Wajib Mahasiswa,1 video,17:30,auto_publish,@andre.don2
+P03,YT Shorts,Cara Otomatisasi Medsos Pakai AI,1 video,19:30,manual_review,@andre.don2
+P04,IG Carousel,Prompt Engineering Cheatsheet,7 slide,09:00,auto_publish,@andre.don2

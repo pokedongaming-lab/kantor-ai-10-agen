@@ -1,0 +1,38 @@
+{
+  "name": "kantor-ai-template",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "author": "Maliki Saputra (@malikisaputra)",
+  "license": "SEE LICENSE IN LICENSE",
+  "description": "Kantor AI 3D: kantor isometrik untuk agen AI kamu (Three.js + React). Template oleh Maliki Saputra (@malikisaputra). Gratis, Lisensi Nonkomersial Maliki Studio 1.0 — dilarang dijual ulang.",
+  "scripts": {
+    "dev": "vite --port 5173",
+    "build": "tsc --noEmit && vite build",
+    "test": "node scripts/test.mjs",
+    "rekam": "node scripts/rekam.mjs",
+    "publish": "node scripts/auto-publish.mjs",
+    "publish:dry": "node scripts/auto-publish.mjs --dry-run",
+    "agents:run": "node scripts/run-autonomous-agents.mjs",
+    "telegram": "node scripts/telegram-bot-service.mjs",
+    "video:remotion": "node scripts/render-remotion.mjs",
+    "video:studio": "cd indostill-video && npm run dev"
+  },
+  "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^18.0.10",
+    "express": "^5.3.0",
+    "pg": "^8.23.1",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "three": "0.170.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@types/three": "0.170.0",
+    "@vitejs/plugin-react": "^6.1.1",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.1"
+  }
+}

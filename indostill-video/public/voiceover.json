@@ -1,0 +1,51 @@
+[
+  {
+    "text": "Open A I panik!",
+    "startMs": 100,
+    "endMs": 1841,
+    "timestampMs": 970.5,
+    "confidence": 1
+  },
+  {
+    "text": "Model AI murah ini bantai model penalaran mahal!",
+    "startMs": 1791,
+    "endMs": 4847,
+    "timestampMs": 3319,
+    "confidence": 1
+  },
+  {
+    "text": "Pertama: DeepSeek R1 pecahkan logika matematika dan coding kompleks setara Open A I o1, tapi bobot modelnya terbuka gratis.",
+    "startMs": 4847,
+    "endMs": 12198,
+    "timestampMs": 8522.5,
+    "confidence": 1
+  },
+  {
+    "text": "Kedua: Jalan lokal offline!",
+    "startMs": 12198,
+    "endMs": 14857,
+    "timestampMs": 13527.5,
+    "confidence": 1
+  },
+  {
+    "text": "Buka terminal, ketik ollama run deepseek-r1, langsung jalan di laptop kamu tanpa bayar token A P I.",
+    "startMs": 14857,
+    "endMs": 20915,
+    "timestampMs": 17886,
+    "confidence": 1
+  },
+  {
+    "text": "Ketiga: Privasi penuh, source code kamu aman dari kebocoran cloud!",
+    "startMs": 20915,
+    "endMs": 25348,
+    "timestampMs": 23131.5,
+    "confidence": 1
+  },
+  {
+    "text": "Save video ini sekarang dan share ke teman developer kamu biar stop bakar duit A P I!",
+    "startMs": 25348,
+    "endMs": 29790,
+    "timestampMs": 27569,
+    "confidence": 1
+  }
+]

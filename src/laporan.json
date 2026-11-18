@@ -1,0 +1,364 @@
+{
+  "kasir": {
+    "ringkasan": "Total 649k tayangan dari 8 postingan aktif. Video Tutorial DeepSeek-R1 memimpin performa.",
+    "menunggu": [
+      "Evaluasi jam posting Reels untuk meningkatkan retention rate di 15 detik pertama"
+    ],
+    "mendesak": [
+      "Engagement video TikTok DeepSeek melonjak, perlu segera rilis video lanjutan"
+    ],
+    "angka": [
+      {
+        "label": "Total tayangan konten",
+        "nilai": "649k views"
+      },
+      {
+        "label": "Konten dianalisa",
+        "nilai": "8 postingan"
+      },
+      {
+        "label": "Platform TikTok",
+        "nilai": "308k views"
+      },
+      {
+        "label": "Platform YT Shorts",
+        "nilai": "177k views"
+      },
+      {
+        "label": "Platform Instagram",
+        "nilai": "164k views"
+      },
+      {
+        "label": "Rata-rata engagement",
+        "nilai": "8.4%"
+      }
+    ]
+  },
+  "stok": {
+    "ringkasan": "Bank aset media dicek: 3 kategori kritis di bawah batas minimum siap re-take.",
+    "menunggu": [],
+    "mendesak": [
+      "Footage B-roll Laptop & Coding (sisa 4, min 10)",
+      "Preset Audio Trending TikTok (sisa 3, min 8)",
+      "Screen Recording Tutorial AI (sisa 2, min 5)"
+    ],
+    "angka": [
+      {
+        "label": "Total kategori aset",
+        "nilai": "6 kategori"
+      },
+      {
+        "label": "Kategori aman",
+        "nilai": "3 kategori"
+      },
+      {
+        "label": "Kategori kritis",
+        "nilai": "3 kategori"
+      }
+    ]
+  },
+  "pesanan": {
+    "ringkasan": "Ada 4 jadwal posting konten hari ini. 3 postingan auto-publish, 1 review manual.",
+    "menunggu": [
+      "P01 · TikTok Feed · Tutorial DeepSeek R1 di HP — jam 12:00",
+      "P02 · IG Reels · 3 Tools AI Wajib Mahasiswa — jam 17:30",
+      "P04 · IG Carousel · Prompt Engineering Cheatsheet — jam 09:00"
+    ],
+    "mendesak": [
+      "P03 · YT Shorts · Cara Otomatisasi Medsos Pakai AI — jam 19:30"
+    ],
+    "angka": [
+      {
+        "label": "Antrean hari ini",
+        "nilai": "4 postingan"
+      },
+      {
+        "label": "Mode Auto-Publish",
+        "nilai": "3 postingan"
+      },
+      {
+        "label": "Mode Manual Review",
+        "nilai": "1 postingan"
+      },
+      {
+        "label": "Jadwal tayang pertama",
+        "nilai": "09:00 WIB"
+      },
+      {
+        "label": "Jadwal tayang terakhir",
+        "nilai": "19:30 WIB"
+      }
+    ]
+  },
+  "cs": {
+    "file": "balasan-wa.md",
+    "total_pesan": 3,
+    "data_balasan": [
+      {
+        "nama": "Rio",
+        "kategori": "Audience",
+        "topik": "AI lokal RAM 8GB",
+        "solusi": "Saran Ollama kuantisasi Q4 dan info konten mendatang"
+      },
+      {
+        "nama": "Sari",
+        "kategori": "Brand Tech",
+        "topik": "Review tool SaaS dan rate card",
+        "solusi": "Arahkan proposal ke email partnership resmi"
+      },
+      {
+        "nama": "Kevin",
+        "kategori": "Follower",
+        "topik": "Auto-publish TikTok webhook",
+        "solusi": "Rekomendasi resmi TikTok Content Posting API via Make/n8n"
+      }
+    ],
+    "ringkasan": "Panduan Ollama 8GB Rio, alur rate card via email Sari, rekomendasi Content Posting API resmi Kevin.",
+    "menunggu": [
+      "Akses staging tool SaaS dan brief dari Sari",
+      "Konfirmasi akun developer TikTok dari Kevin"
+    ],
+    "mendesak": [
+      "Kirim rate card dan jadwal slot tayang ke Sari"
+    ],
+    "angka": [
+      {
+        "label": "Total Pesan",
+        "nilai": "3"
+      },
+      {
+        "label": "Batas RAM Target",
+        "nilai": "8GB"
+      },
+      {
+        "label": "Kapasitas Model Rekomendasi",
+        "nilai": "3B parameters"
+      }
+    ]
+  },
+  "keuangan": {
+    "ringkasan": "Tracking performa monetisasi & link bio: 12 lonjakan klik link affiliate tools AI dan 1 tawaran kemitraan sponsorship baru.",
+    "menunggu": [
+      "Penyusunan paket rate card sponsorship khusus produk AI SaaS"
+    ],
+    "mendesak": [],
+    "angka": [
+      {
+        "label": "Klik link bio total",
+        "nilai": "1.240 klik"
+      },
+      {
+        "label": "Klik link affiliate AI",
+        "nilai": "820 klik"
+      },
+      {
+        "label": "Unduhan resource gratis",
+        "nilai": "420 unduhan"
+      },
+      {
+        "label": "Inquiry brand aktif",
+        "nilai": "1 kemitraan"
+      }
+    ]
+  },
+  "riset": {
+    "ringkasan": "3 topik AI viral siap script: DeepSeek-R1, browser-use, Qwen lokal.",
+    "menunggu": [
+      "Pilihan topik prioritas dari Andre",
+      "Penyusunan naskah 60 detik"
+    ],
+    "mendesak": [
+      "Take video DeepSeek-R1 hari ini sebelum tren jenuh"
+    ],
+    "angka": [
+      {
+        "label": "Target Topik",
+        "nilai": "3"
+      },
+      {
+        "label": "Estimasi Durasi Video",
+        "nilai": "45-58 detik"
+      },
+      {
+        "label": "Potensi Jangkauan",
+        "nilai": "Tinggi (Dev & Tech Enthusiast)"
+      }
+    ]
+  },
+  "konten": {
+    "status": "selesai",
+    "penulis": "Sekar",
+    "target_talent": "Andre D'Andreas",
+    "jumlah_naskah": 3,
+    "naskah": [
+      {
+        "id": 1,
+        "topik": "DeepSeek-R1 Lawan OpenAI o1",
+        "hook": "OpenAI panik. Model AI murah ini bantai model penalaran mahal!",
+        "target_durasi_detik": 45,
+        "teknis": "ollama run deepseek-r1"
+      },
+      {
+        "id": 2,
+        "topik": "Browser-Use: Agentic AI Ambil Alih Web",
+        "hook": "Coding lima baris Python, AI langsung ambil alih browser kamu!",
+        "target_durasi_detik": 45,
+        "teknis": "python library browser-use kontrol chromium"
+      },
+      {
+        "id": 3,
+        "topik": "Qwen 2.5-Coder di Laptop Spek Rendah",
+        "hook": "Stop bayar Copilot dua puluh dollar! AI coding offline ini gratis selamanya!",
+        "target_durasi_detik": 45,
+        "teknis": "LM Studio, Qwen 2.5-Coder 7B GGUF, VS Code, Continue.dev"
+      }
+    ],
+    "ringkasan": "3 naskah video pendek dengan hook kuat siap produksi.",
+    "menunggu": [],
+    "mendesak": [],
+    "angka": [
+      {
+        "label": "Status",
+        "nilai": "Aktif"
+      }
+    ]
+  },
+  "desain": {
+    "file": "desain.md",
+    "brief_count": 3,
+    "briefs": [
+      {
+        "id": 1,
+        "title": "DeepSeek vs o1 Duel",
+        "target_video": "Naskah 1",
+        "overlay_text": "OPENAI PANIK?! MODEL GRATIS BANTAI o1",
+        "color_palette": [
+          "#0D0E15",
+          "#00F0FF",
+          "#00FF66",
+          "#FF003C"
+        ]
+      },
+      {
+        "id": 2,
+        "title": "Local AI Offline",
+        "target_video": "Naskah 1",
+        "overlay_text": "OFFLINE & GRATIS! STOP BAKAR API",
+        "color_palette": [
+          "#050505",
+          "#39FF14",
+          "#B026FF",
+          "#120024"
+        ]
+      },
+      {
+        "id": 3,
+        "title": "Browser-Use Takeover",
+        "target_video": "Naskah 2",
+        "overlay_text": "AI BAJAK BROWSER! CUMA 5 BARIS PYTHON",
+        "color_palette": [
+          "#0A0E17",
+          "#00D2FF",
+          "#FFB800",
+          "#FF007F"
+        ]
+      }
+    ],
+    "ringkasan": "3 visual thumbnail neon tech mode selesai dirancang.",
+    "menunggu": [],
+    "mendesak": [],
+    "angka": [
+      {
+        "label": "Status",
+        "nilai": "Aktif"
+      }
+    ]
+  },
+  "laporan": {
+    "ringkasan": "3 naskah video & brief thumbnail diverifikasi lolos audit mutu (CQS 95/100). Standar Anti-Slop terpenuhi.",
+    "menunggu": [
+      "Persetujuan akhir Bu Ratna untuk jadwal rilis prime time"
+    ],
+    "mendesak": [],
+    "angka": [
+      {
+        "label": "skor mutu CQS",
+        "nilai": "95/100"
+      },
+      {
+        "label": "akurasi fakta",
+        "nilai": "98%"
+      },
+      {
+        "label": "skor hook",
+        "nilai": "94/100"
+      },
+      {
+        "label": "status audit",
+        "nilai": "PASS"
+      }
+    ]
+  },
+  "manajer": {
+    "studio": "Andre D'Andreas",
+    "lead": "Bu Ratna",
+    "status": "FINAL",
+    "strategy_week": {
+      "core_goal": "High-Ticket Client Acquisition",
+      "pillars": [
+        {
+          "name": "Proof of Craft",
+          "weight": 0.4
+        },
+        {
+          "name": "Framework & Insight",
+          "weight": 0.35
+        },
+        {
+          "name": "Industry Takes",
+          "weight": 0.25
+        }
+      ],
+      "deliverables": [
+        {
+          "format": "Short-form Video",
+          "quota": 3,
+          "platforms": [
+            "Instagram",
+            "TikTok"
+          ]
+        },
+        {
+          "format": "Carousel",
+          "quota": 2,
+          "platforms": [
+            "LinkedIn",
+            "Instagram"
+          ]
+        },
+        {
+          "format": "In-depth Case Study",
+          "quota": 1,
+          "platforms": [
+            "Website",
+            "Substack"
+          ]
+        }
+      ],
+      "task_delegation": {
+        "design_team": "Finalisasi render aset visual 4K Rabu 12:00",
+        "video_team": "Editing pacing cepat, no filler footage",
+        "copywriting_team": "Tone otoritatif, fokus business value"
+      }
+    },
+    "ringkasan": "Strategi konten mingguan dan arahan tim telah difinalisasi.",
+    "menunggu": [],
+    "mendesak": [],
+    "angka": [
+      {
+        "label": "Status",
+        "nilai": "Aktif"
+      }
+    ]
+  }
+}

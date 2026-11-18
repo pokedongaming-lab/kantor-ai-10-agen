@@ -1,0 +1,737 @@
+[
+  {
+    "text": "Bayangin",
+    "startMs": 100,
+    "endMs": 576,
+    "timestampMs": 338,
+    "confidence": 1
+  },
+  {
+    "text": "punya",
+    "startMs": 576,
+    "endMs": 873,
+    "timestampMs": 724,
+    "confidence": 1
+  },
+  {
+    "text": "AI",
+    "startMs": 873,
+    "endMs": 992,
+    "timestampMs": 932,
+    "confidence": 1
+  },
+  {
+    "text": "yang",
+    "startMs": 992,
+    "endMs": 1230,
+    "timestampMs": 1111,
+    "confidence": 1
+  },
+  {
+    "text": "bisa",
+    "startMs": 1230,
+    "endMs": 1468,
+    "timestampMs": 1349,
+    "confidence": 1
+  },
+  {
+    "text": "mikir",
+    "startMs": 1468,
+    "endMs": 1765,
+    "timestampMs": 1616,
+    "confidence": 1
+  },
+  {
+    "text": "kompleks",
+    "startMs": 1765,
+    "endMs": 2241,
+    "timestampMs": 2003,
+    "confidence": 1
+  },
+  {
+    "text": "seperti",
+    "startMs": 2241,
+    "endMs": 2658,
+    "timestampMs": 2450,
+    "confidence": 1
+  },
+  {
+    "text": "OpenAI",
+    "startMs": 2658,
+    "endMs": 3015,
+    "timestampMs": 2836,
+    "confidence": 1
+  },
+  {
+    "text": "o-one,",
+    "startMs": 3015,
+    "endMs": 3372,
+    "timestampMs": 3194,
+    "confidence": 1
+  },
+  {
+    "text": "tapi",
+    "startMs": 3372,
+    "endMs": 3610,
+    "timestampMs": 3491,
+    "confidence": 1
+  },
+  {
+    "text": "bisa",
+    "startMs": 3610,
+    "endMs": 3848,
+    "timestampMs": 3729,
+    "confidence": 1
+  },
+  {
+    "text": "kamu",
+    "startMs": 3848,
+    "endMs": 4086,
+    "timestampMs": 3967,
+    "confidence": 1
+  },
+  {
+    "text": "jalankan",
+    "startMs": 4086,
+    "endMs": 4562,
+    "timestampMs": 4324,
+    "confidence": 1
+  },
+  {
+    "text": "sendiri",
+    "startMs": 4562,
+    "endMs": 4979,
+    "timestampMs": 4770,
+    "confidence": 1
+  },
+  {
+    "text": "di",
+    "startMs": 4979,
+    "endMs": 5098,
+    "timestampMs": 5038,
+    "confidence": 1
+  },
+  {
+    "text": "komputer!",
+    "startMs": 5098,
+    "endMs": 5634,
+    "timestampMs": 5366,
+    "confidence": 1
+  },
+  {
+    "text": "Kenalin,",
+    "startMs": 5592,
+    "endMs": 6607,
+    "timestampMs": 6100,
+    "confidence": 1
+  },
+  {
+    "text": "DeepSeek-R1!",
+    "startMs": 6607,
+    "endMs": 8129,
+    "timestampMs": 7368,
+    "confidence": 1
+  },
+  {
+    "text": "Model",
+    "startMs": 8130,
+    "endMs": 8456,
+    "timestampMs": 8293,
+    "confidence": 1
+  },
+  {
+    "text": "AI",
+    "startMs": 8456,
+    "endMs": 8586,
+    "timestampMs": 8521,
+    "confidence": 1
+  },
+  {
+    "text": "reasoning",
+    "startMs": 8586,
+    "endMs": 9173,
+    "timestampMs": 8880,
+    "confidence": 1
+  },
+  {
+    "text": "yang",
+    "startMs": 9173,
+    "endMs": 9434,
+    "timestampMs": 9304,
+    "confidence": 1
+  },
+  {
+    "text": "bikin",
+    "startMs": 9434,
+    "endMs": 9760,
+    "timestampMs": 9597,
+    "confidence": 1
+  },
+  {
+    "text": "industri",
+    "startMs": 9760,
+    "endMs": 10282,
+    "timestampMs": 10021,
+    "confidence": 1
+  },
+  {
+    "text": "teknologi",
+    "startMs": 10282,
+    "endMs": 10869,
+    "timestampMs": 10576,
+    "confidence": 1
+  },
+  {
+    "text": "melirik.",
+    "startMs": 10869,
+    "endMs": 11391,
+    "timestampMs": 11130,
+    "confidence": 1
+  },
+  {
+    "text": "Kemampuannya",
+    "startMs": 11396,
+    "endMs": 12194,
+    "timestampMs": 11795,
+    "confidence": 1
+  },
+  {
+    "text": "dalam",
+    "startMs": 12194,
+    "endMs": 12526,
+    "timestampMs": 12360,
+    "confidence": 1
+  },
+  {
+    "text": "matematika,",
+    "startMs": 12526,
+    "endMs": 13258,
+    "timestampMs": 12892,
+    "confidence": 1
+  },
+  {
+    "text": "coding,",
+    "startMs": 13258,
+    "endMs": 13723,
+    "timestampMs": 13490,
+    "confidence": 1
+  },
+  {
+    "text": "dan",
+    "startMs": 13723,
+    "endMs": 13922,
+    "timestampMs": 13822,
+    "confidence": 1
+  },
+  {
+    "text": "penalaran",
+    "startMs": 13922,
+    "endMs": 14521,
+    "timestampMs": 14222,
+    "confidence": 1
+  },
+  {
+    "text": "diklaim",
+    "startMs": 14521,
+    "endMs": 14986,
+    "timestampMs": 14754,
+    "confidence": 1
+  },
+  {
+    "text": "sebanding",
+    "startMs": 14986,
+    "endMs": 15585,
+    "timestampMs": 15286,
+    "confidence": 1
+  },
+  {
+    "text": "dengan",
+    "startMs": 15585,
+    "endMs": 15984,
+    "timestampMs": 15784,
+    "confidence": 1
+  },
+  {
+    "text": "OpenAI",
+    "startMs": 15984,
+    "endMs": 16383,
+    "timestampMs": 16184,
+    "confidence": 1
+  },
+  {
+    "text": "o-one.",
+    "startMs": 16383,
+    "endMs": 16782,
+    "timestampMs": 16582,
+    "confidence": 1
+  },
+  {
+    "text": "Yang",
+    "startMs": 16787,
+    "endMs": 17116,
+    "timestampMs": 16952,
+    "confidence": 1
+  },
+  {
+    "text": "menarik,",
+    "startMs": 17116,
+    "endMs": 17774,
+    "timestampMs": 17445,
+    "confidence": 1
+  },
+  {
+    "text": "model",
+    "startMs": 17774,
+    "endMs": 18185,
+    "timestampMs": 17980,
+    "confidence": 1
+  },
+  {
+    "text": "ini",
+    "startMs": 18185,
+    "endMs": 18431,
+    "timestampMs": 18308,
+    "confidence": 1
+  },
+  {
+    "text": "punya",
+    "startMs": 18431,
+    "endMs": 18842,
+    "timestampMs": 18636,
+    "confidence": 1
+  },
+  {
+    "text": "bobot",
+    "startMs": 18842,
+    "endMs": 19253,
+    "timestampMs": 19048,
+    "confidence": 1
+  },
+  {
+    "text": "terbuka.",
+    "startMs": 19253,
+    "endMs": 19911,
+    "timestampMs": 19582,
+    "confidence": 1
+  },
+  {
+    "text": "Bahkan,",
+    "startMs": 19915,
+    "endMs": 20411,
+    "timestampMs": 20163,
+    "confidence": 1
+  },
+  {
+    "text": "kamu",
+    "startMs": 20411,
+    "endMs": 20694,
+    "timestampMs": 20552,
+    "confidence": 1
+  },
+  {
+    "text": "bisa",
+    "startMs": 20694,
+    "endMs": 20977,
+    "timestampMs": 20836,
+    "confidence": 1
+  },
+  {
+    "text": "menjalankannya",
+    "startMs": 20977,
+    "endMs": 21969,
+    "timestampMs": 21473,
+    "confidence": 1
+  },
+  {
+    "text": "secara",
+    "startMs": 21969,
+    "endMs": 22394,
+    "timestampMs": 22182,
+    "confidence": 1
+  },
+  {
+    "text": "lokal",
+    "startMs": 22394,
+    "endMs": 22748,
+    "timestampMs": 22571,
+    "confidence": 1
+  },
+  {
+    "text": "menggunakan",
+    "startMs": 22748,
+    "endMs": 23527,
+    "timestampMs": 23138,
+    "confidence": 1
+  },
+  {
+    "text": "Ollama.",
+    "startMs": 23527,
+    "endMs": 24023,
+    "timestampMs": 23775,
+    "confidence": 1
+  },
+  {
+    "text": "Tinggal",
+    "startMs": 24027,
+    "endMs": 24624,
+    "timestampMs": 24326,
+    "confidence": 1
+  },
+  {
+    "text": "buka",
+    "startMs": 24624,
+    "endMs": 24965,
+    "timestampMs": 24794,
+    "confidence": 1
+  },
+  {
+    "text": "terminal,",
+    "startMs": 24965,
+    "endMs": 25733,
+    "timestampMs": 25349,
+    "confidence": 1
+  },
+  {
+    "text": "ketik:",
+    "startMs": 25733,
+    "endMs": 26245,
+    "timestampMs": 25989,
+    "confidence": 1
+  },
+  {
+    "text": "ollama",
+    "startMs": 26245,
+    "endMs": 26757,
+    "timestampMs": 26501,
+    "confidence": 1
+  },
+  {
+    "text": "run",
+    "startMs": 26757,
+    "endMs": 27013,
+    "timestampMs": 26885,
+    "confidence": 1
+  },
+  {
+    "text": "deepseek-r1.",
+    "startMs": 27013,
+    "endMs": 28037,
+    "timestampMs": 27525,
+    "confidence": 1
+  },
+  {
+    "text": "Dan",
+    "startMs": 28040,
+    "endMs": 28268,
+    "timestampMs": 28154,
+    "confidence": 1
+  },
+  {
+    "text": "AI",
+    "startMs": 28268,
+    "endMs": 28420,
+    "timestampMs": 28344,
+    "confidence": 1
+  },
+  {
+    "text": "langsung",
+    "startMs": 28420,
+    "endMs": 29028,
+    "timestampMs": 28724,
+    "confidence": 1
+  },
+  {
+    "text": "berjalan",
+    "startMs": 29028,
+    "endMs": 29636,
+    "timestampMs": 29332,
+    "confidence": 1
+  },
+  {
+    "text": "di",
+    "startMs": 29636,
+    "endMs": 29788,
+    "timestampMs": 29712,
+    "confidence": 1
+  },
+  {
+    "text": "komputermu!",
+    "startMs": 29788,
+    "endMs": 30625,
+    "timestampMs": 30206,
+    "confidence": 1
+  },
+  {
+    "text": "Artinya?",
+    "startMs": 30628,
+    "endMs": 32122,
+    "timestampMs": 31375,
+    "confidence": 1
+  },
+  {
+    "text": "Kamu",
+    "startMs": 32122,
+    "endMs": 32353,
+    "timestampMs": 32238,
+    "confidence": 1
+  },
+  {
+    "text": "bisa",
+    "startMs": 32353,
+    "endMs": 32584,
+    "timestampMs": 32468,
+    "confidence": 1
+  },
+  {
+    "text": "mengurangi",
+    "startMs": 32584,
+    "endMs": 33161,
+    "timestampMs": 32872,
+    "confidence": 1
+  },
+  {
+    "text": "ketergantungan",
+    "startMs": 33161,
+    "endMs": 33969,
+    "timestampMs": 33565,
+    "confidence": 1
+  },
+  {
+    "text": "pada",
+    "startMs": 33969,
+    "endMs": 34200,
+    "timestampMs": 34084,
+    "confidence": 1
+  },
+  {
+    "text": "API",
+    "startMs": 34200,
+    "endMs": 34373,
+    "timestampMs": 34286,
+    "confidence": 1
+  },
+  {
+    "text": "berbayar",
+    "startMs": 34373,
+    "endMs": 34835,
+    "timestampMs": 34604,
+    "confidence": 1
+  },
+  {
+    "text": "dan,",
+    "startMs": 34835,
+    "endMs": 35066,
+    "timestampMs": 34950,
+    "confidence": 1
+  },
+  {
+    "text": "jika",
+    "startMs": 35066,
+    "endMs": 35297,
+    "timestampMs": 35182,
+    "confidence": 1
+  },
+  {
+    "text": "dikonfigurasi",
+    "startMs": 35297,
+    "endMs": 36047,
+    "timestampMs": 35672,
+    "confidence": 1
+  },
+  {
+    "text": "lokal,",
+    "startMs": 36047,
+    "endMs": 36393,
+    "timestampMs": 36220,
+    "confidence": 1
+  },
+  {
+    "text": "data",
+    "startMs": 36393,
+    "endMs": 36624,
+    "timestampMs": 36508,
+    "confidence": 1
+  },
+  {
+    "text": "yang",
+    "startMs": 36624,
+    "endMs": 36855,
+    "timestampMs": 36740,
+    "confidence": 1
+  },
+  {
+    "text": "kamu",
+    "startMs": 36855,
+    "endMs": 37086,
+    "timestampMs": 36970,
+    "confidence": 1
+  },
+  {
+    "text": "proses",
+    "startMs": 37086,
+    "endMs": 37432,
+    "timestampMs": 37259,
+    "confidence": 1
+  },
+  {
+    "text": "tidak",
+    "startMs": 37432,
+    "endMs": 37720,
+    "timestampMs": 37576,
+    "confidence": 1
+  },
+  {
+    "text": "perlu",
+    "startMs": 37720,
+    "endMs": 38008,
+    "timestampMs": 37864,
+    "confidence": 1
+  },
+  {
+    "text": "dikirim",
+    "startMs": 38008,
+    "endMs": 38412,
+    "timestampMs": 38210,
+    "confidence": 1
+  },
+  {
+    "text": "ke",
+    "startMs": 38412,
+    "endMs": 38527,
+    "timestampMs": 38470,
+    "confidence": 1
+  },
+  {
+    "text": "server",
+    "startMs": 38527,
+    "endMs": 38873,
+    "timestampMs": 38700,
+    "confidence": 1
+  },
+  {
+    "text": "AI",
+    "startMs": 38873,
+    "endMs": 38988,
+    "timestampMs": 38930,
+    "confidence": 1
+  },
+  {
+    "text": "eksternal.",
+    "startMs": 38988,
+    "endMs": 39565,
+    "timestampMs": 39276,
+    "confidence": 1
+  },
+  {
+    "text": "Developer,",
+    "startMs": 39572,
+    "endMs": 40403,
+    "timestampMs": 39988,
+    "confidence": 1
+  },
+  {
+    "text": "masih",
+    "startMs": 40403,
+    "endMs": 40818,
+    "timestampMs": 40610,
+    "confidence": 1
+  },
+  {
+    "text": "mau",
+    "startMs": 40818,
+    "endMs": 41067,
+    "timestampMs": 40942,
+    "confidence": 1
+  },
+  {
+    "text": "bakar",
+    "startMs": 41067,
+    "endMs": 41482,
+    "timestampMs": 41274,
+    "confidence": 1
+  },
+  {
+    "text": "uang",
+    "startMs": 41482,
+    "endMs": 41814,
+    "timestampMs": 41648,
+    "confidence": 1
+  },
+  {
+    "text": "buat",
+    "startMs": 41814,
+    "endMs": 42146,
+    "timestampMs": 41980,
+    "confidence": 1
+  },
+  {
+    "text": "API?",
+    "startMs": 42146,
+    "endMs": 42478,
+    "timestampMs": 42312,
+    "confidence": 1
+  },
+  {
+    "text": "Save",
+    "startMs": 42481,
+    "endMs": 42772,
+    "timestampMs": 42626,
+    "confidence": 1
+  },
+  {
+    "text": "video",
+    "startMs": 42772,
+    "endMs": 43136,
+    "timestampMs": 42954,
+    "confidence": 1
+  },
+  {
+    "text": "ini",
+    "startMs": 43136,
+    "endMs": 43354,
+    "timestampMs": 43245,
+    "confidence": 1
+  },
+  {
+    "text": "dan",
+    "startMs": 43354,
+    "endMs": 43572,
+    "timestampMs": 43463,
+    "confidence": 1
+  },
+  {
+    "text": "tag",
+    "startMs": 43572,
+    "endMs": 43790,
+    "timestampMs": 43681,
+    "confidence": 1
+  },
+  {
+    "text": "temanmu",
+    "startMs": 43790,
+    "endMs": 44299,
+    "timestampMs": 44044,
+    "confidence": 1
+  },
+  {
+    "text": "yang",
+    "startMs": 44299,
+    "endMs": 44590,
+    "timestampMs": 44444,
+    "confidence": 1
+  },
+  {
+    "text": "wajib",
+    "startMs": 44590,
+    "endMs": 44954,
+    "timestampMs": 44772,
+    "confidence": 1
+  },
+  {
+    "text": "nyobain!",
+    "startMs": 44954,
+    "endMs": 45536,
+    "timestampMs": 45245,
+    "confidence": 1
+  }
+]

@@ -1,0 +1,36 @@
+PAKET 10 AGENT UMKM GRATIS (Antigravity CLI)
+dari @malikisaputra · contoh toko roti fiktif "Roti Senja"
+
+Isi:
+- AGENTS.md            aturan bersama 10 agent
+- .agents/agents/      10 agent: kasir, stok, pesanan, cs, keuangan (lantai 1)
+                       riset, konten, desain, laporan, manajer (lantai 2)
+- data/                contoh data harian: penjualan.csv, stok.csv, pesanan.csv, pesan-wa.txt
+- src/laporan.json     tempat laporan semua agent (berisi contoh hasil uji)
+- Kantor AI 3D 2 lantai (src/, index.html, package.json): 10 agent tampil di kantor
+
+Cara pakai:
+1. Pasang Antigravity CLI (gratis, login Gmail, umur 18+):
+   Mac:     curl -fsSL https://antigravity.google/cli/install.sh | bash
+   Windows: irm https://antigravity.google/cli/install.ps1 | iex
+2. Ganti isi folder data/ dengan data usahamu (format sama). Jangan tulis nominal uang.
+   (Folder .agents tersembunyi di Mac: tekan Cmd + Shift + titik di Finder.)
+3. Buka Terminal di folder ini, ketik: agy
+   Lalu tulis: minta agent kasir, stok, pesanan, cs, keuangan, riset, konten, desain mengerjakan tugasnya,
+   lalu agent laporan dan manajer merangkum. Semua tulis ke src/laporan.json
+4. Baca setiap izin sebelum setuju. Izin agent anggota tim muncul di kotak kuning: tekan ctrl+k.
+5. Paket gratis punya kuota mingguan. Cek sisa kuota dengan /usage.
+   Hemat: jalankan seminggu sekali, atau panggil agent yang perlu saja.
+6. Buka kantornya (butuh Node.js): npm install, lalu npm run dev.
+   Kedua lantai tampil dengan laporan terbaru dari src/laporan.json.
+7. Agent CS hanya membuat draf balasan (balasan-wa.md), tidak mengirim apa pun.
+   Tetap cek hasil agent sebelum dipakai.
+
+Lisensi: gratis dipakai dan diubah. Kredit "Template oleh Maliki Saputra (@malikisaputra)" wajib dipertahankan.
+Tidak untuk diperjualbelikan.
+
+---
+Template oleh Maliki Saputra (@malikisaputra) — https://malikisaputra.biz.id
+Gratis, Lisensi Nonkomersial Maliki Studio 1.0: boleh dipakai untuk belajar, pribadi,
+atau usaha/organisasimu sendiri; wajib cantumkan kredit; DILARANG dijual, dijual ulang,
+atau dipakai untuk jasa berbayar ke pihak lain. Lihat file LICENSE.

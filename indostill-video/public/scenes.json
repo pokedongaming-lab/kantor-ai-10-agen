@@ -1,0 +1,68 @@
+[
+  {
+    "id": "scene_hook",
+    "act": "HOOK",
+    "title": "AI CANGGIH DI LAPTOP SENDIRI",
+    "tag": "🔥 BREAKING NEWS",
+    "accent": "#FF0055",
+    "bgImage": "scenes/scene1_hook.jpg",
+    "startMs": 100,
+    "endMs": 5642,
+    "text": "Bayangin punya AI yang bisa mikir kompleks seperti OpenAI o-one, tapi bisa kamu jalankan sendiri di komputer!"
+  },
+  {
+    "id": "scene_curiosity",
+    "act": "CURIOSITY",
+    "title": "DEEPSEEK-R1 REASONING KING",
+    "tag": "⚡ OPENAI O1 RIVAL",
+    "accent": "#00F0FF",
+    "bgImage": "scenes/scene2_curiosity.jpg",
+    "startMs": 5592,
+    "endMs": 16787,
+    "text": "Kenalin, DeepSeek-R1! Model AI reasoning yang bikin industri teknologi melirik. Kemampuannya dalam matematika, coding, dan penalaran diklaim sebanding dengan OpenAI o-one."
+  },
+  {
+    "id": "scene_open_weights",
+    "act": "OPEN SOURCE",
+    "title": "OPEN WEIGHTS & OLLAMA",
+    "tag": "🔓 100% OPEN WEIGHTS",
+    "accent": "#FFB800",
+    "bgImage": "scenes/scene3_open_source.jpg",
+    "startMs": 16787,
+    "endMs": 24027,
+    "text": "Yang menarik, model ini punya bobot terbuka. Bahkan, kamu bisa menjalankannya secara lokal menggunakan Ollama."
+  },
+  {
+    "id": "scene_demo_terminal",
+    "act": "DEMONSTRASI",
+    "title": "TERMINAL LOCAL RUN",
+    "tag": "💻 OFFLINE TERMINAL",
+    "accent": "#00FF66",
+    "bgImage": "scenes/scene4_terminal.jpg",
+    "startMs": 24027,
+    "endMs": 30628,
+    "text": "Tinggal buka terminal, ketik: ollama run deepseek-r1. Dan AI langsung berjalan di komputermu!"
+  },
+  {
+    "id": "scene_payoff",
+    "act": "PAYOFF",
+    "title": "HEMAT API & PRIVASI AMAN",
+    "tag": "🔒 ZERO CLOUD LEAK",
+    "accent": "#B026FF",
+    "bgImage": "scenes/scene5_privacy.jpg",
+    "startMs": 30628,
+    "endMs": 39572,
+    "text": "Artinya? Kamu bisa mengurangi ketergantungan pada API berbayar dan, jika dikonfigurasi lokal, data yang kamu proses tidak perlu dikirim ke server AI eksternal."
+  },
+  {
+    "id": "scene_cta",
+    "act": "CTA",
+    "title": "SAVE & TAG TEMAN DEV KAMU",
+    "tag": "🚀 INDOSTILL.ID",
+    "accent": "#FFE600",
+    "bgImage": "scenes/scene6_cta.jpg",
+    "startMs": 39572,
+    "endMs": 45540,
+    "text": "Developer, masih mau bakar uang buat API? Save video ini dan tag temanmu yang wajib nyobain!"
+  }
+]

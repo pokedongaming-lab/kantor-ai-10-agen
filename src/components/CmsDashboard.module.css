@@ -1,0 +1,1584 @@
+/* ================================================================
+   AI CMS Dashboard — indostill.id Tech Studio
+   Design System: Inter, deep navy palette, disciplined structure
+   ================================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+/* ── Tokens ─────────────────────────────────────────────────────── */
+:root {
+  --bg-base: #0C0F1A;
+  --bg-surface: #131726;
+  --bg-elevated: #1A1F32;
+  --bg-inset: #0A0D17;
+  --border-subtle: #1E2438;
+  --border-medium: #2A3148;
+  --text-primary: #E8ECF4;
+  --text-secondary: #8892A8;
+  --text-tertiary: #5C6478;
+  --accent: #3B82F6;
+  --accent-muted: rgba(59, 130, 246, 0.12);
+  --success: #10B981;
+  --success-muted: rgba(16, 185, 129, 0.12);
+  --warning: #F59E0B;
+  --warning-muted: rgba(245, 158, 11, 0.12);
+  --danger: #EF4444;
+  --danger-muted: rgba(239, 68, 68, 0.12);
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+}
+
+/* ── Layout Shell ───────────────────────────────────────────────── */
+.shell {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  background-color: var(--bg-base);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  line-height: 1.5;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Sidebar ────────────────────────────────────────────────────── */
+.sidebar {
+  width: 256px;
+  background-color: var(--bg-surface);
+  border-right: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+
+.sidebarBrand {
+  padding: 22px 20px;
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sidebarBrandLogo {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: 1.5px solid var(--border-medium);
+}
+
+.sidebarBrandName {
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--text-primary);
+  letter-spacing: 0.3px;
+}
+
+.sidebarBrandSub {
+  font-size: 11px;
+  color: var(--text-secondary);
+  font-weight: 500;
+  margin-top: 1px;
+}
+
+.sidebarNav {
+  flex: 1;
+  overflow-y: auto;
+  padding: 14px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sidebarLabel {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  padding: 10px 12px 6px;
+  letter-spacing: 0.02em;
+}
+
+.navBtn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: var(--radius-sm);
+  border: none;
+  background-color: transparent;
+  color: var(--text-secondary);
+  font-weight: 500;
+  font-size: 13px;
+  font-family: var(--font-sans);
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.12s ease, color 0.12s ease;
+  width: 100%;
+}
+
+.navBtn:hover {
+  background-color: var(--bg-elevated);
+  color: var(--text-primary);
+}
+
+.navBtnActive {
+  composes: navBtn;
+  background-color: var(--accent-muted);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.navBtnSpecial {
+  composes: navBtn;
+  color: var(--accent);
+  border: 1px dashed var(--border-medium);
+}
+
+.navDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: currentColor;
+  opacity: 0.5;
+  flex-shrink: 0;
+}
+
+.sidebarFooter {
+  padding: 14px 18px;
+  border-top: 1px solid var(--border-subtle);
+  background-color: var(--bg-inset);
+}
+
+.orchestratorStatus {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.statusDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: var(--success);
+  flex-shrink: 0;
+}
+
+.orchestratorName {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.orchestratorSub {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  margin-top: 2px;
+}
+
+/* ── Main Area ──────────────────────────────────────────────────── */
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.topBar {
+  height: 56px;
+  border-bottom: 1px solid var(--border-subtle);
+  padding: 0 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: var(--bg-surface);
+  flex-shrink: 0;
+}
+
+.pageTitle {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.dbBadge {
+  background-color: var(--bg-elevated);
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 500;
+  padding: 3px 10px;
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  margin-left: 12px;
+}
+
+.contentSelector {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.contentSelectorLabel {
+  font-size: 12px;
+  color: var(--text-tertiary);
+}
+
+.selectInput {
+  background-color: var(--bg-elevated);
+  color: var(--text-primary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 5px 10px;
+  font-size: 12px;
+  font-family: var(--font-sans);
+  font-weight: 500;
+}
+
+/* ── Toast ──────────────────────────────────────────────────────── */
+.toast {
+  padding: 10px 24px;
+  color: #fff;
+  font-weight: 600;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.toastSuccess { composes: toast; background-color: var(--success); }
+.toastError { composes: toast; background-color: var(--danger); }
+.toastInfo { composes: toast; background-color: var(--accent); }
+
+.toastClose {
+  background: none;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 0 4px;
+}
+
+/* ── Content Area ───────────────────────────────────────────────── */
+.content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px 28px;
+  background-color: var(--bg-base);
+}
+
+/* ── Overview Tab ───────────────────────────────────────────────── */
+.metricsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.metricCard {
+  background-color: var(--bg-surface);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-subtle);
+  padding: 18px 20px;
+}
+
+.metricLabel {
+  font-size: 12px;
+  color: var(--text-secondary);
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.metricValue {
+  font-size: 26px;
+  font-weight: 700;
+  margin-bottom: 4px;
+  font-variant-numeric: tabular-nums;
+}
+
+.metricSub {
+  font-size: 11px;
+  color: var(--text-tertiary);
+}
+
+/* ── Research Input ─────────────────────────────────────────────── */
+.researchBox {
+  background-color: var(--bg-surface);
+  padding: 20px 24px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-subtle);
+  margin-bottom: 24px;
+}
+
+.researchTitle {
+  margin: 0 0 12px 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.researchRow {
+  display: flex;
+  gap: 12px;
+}
+
+.inputField {
+  flex: 1;
+  background-color: var(--bg-inset);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  color: var(--text-primary);
+  font-size: 13px;
+  font-family: var(--font-sans);
+}
+
+.inputField::placeholder {
+  color: var(--text-tertiary);
+}
+
+.selectField {
+  composes: inputField;
+  flex: none;
+  min-width: 160px;
+}
+
+.btnPrimary {
+  background-color: var(--accent);
+  color: #fff;
+  font-weight: 600;
+  padding: 10px 22px;
+  border-radius: var(--radius-sm);
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+  font-family: var(--font-sans);
+  white-space: nowrap;
+  transition: opacity 0.12s;
+}
+
+.btnPrimary:hover { opacity: 0.9; }
+.btnPrimary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.btnSecondary {
+  background-color: var(--bg-elevated);
+  color: var(--text-primary);
+  font-weight: 600;
+  padding: 10px 18px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-medium);
+  cursor: pointer;
+  font-size: 13px;
+  font-family: var(--font-sans);
+  transition: background-color 0.12s;
+}
+
+.btnSecondary:hover { background-color: var(--border-subtle); }
+.btnSecondary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.btnSuccess {
+  composes: btnPrimary;
+  background-color: var(--success);
+}
+
+.btnWarning {
+  composes: btnSecondary;
+  border-color: var(--warning);
+  color: var(--warning);
+}
+
+.btnDanger {
+  composes: btnPrimary;
+  background-color: var(--danger);
+}
+
+/* ── Pipeline Kanban (the bold design moment) ───────────────────── */
+.kanbanSection {
+  margin-bottom: 24px;
+}
+
+.kanbanTitle {
+  margin: 0 0 14px 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.kanbanGrid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 3px;
+  background-color: var(--border-subtle);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.kanbanColumn {
+  background-color: var(--bg-base);
+  padding: 16px 14px;
+  min-height: 160px;
+}
+
+.kanbanColumnHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid transparent;
+}
+
+.kanbanColumnHeaderResearched { composes: kanbanColumnHeader; border-bottom-color: #3B82F6; }
+.kanbanColumnHeaderScript { composes: kanbanColumnHeader; border-bottom-color: #8B5CF6; }
+.kanbanColumnHeaderProduction { composes: kanbanColumnHeader; border-bottom-color: var(--warning); }
+.kanbanColumnHeaderApproval { composes: kanbanColumnHeader; border-bottom-color: #06B6D4; }
+.kanbanColumnHeaderPublished { composes: kanbanColumnHeader; border-bottom-color: var(--success); }
+
+.kanbanStatusLabel {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.kanbanCount {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  background-color: var(--bg-surface);
+  padding: 1px 7px;
+  border-radius: 3px;
+}
+
+.kanbanCard {
+  background-color: var(--bg-surface);
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-subtle);
+  cursor: pointer;
+  margin-bottom: 8px;
+  transition: border-color 0.12s;
+}
+
+.kanbanCard:hover {
+  border-color: var(--accent);
+}
+
+.kanbanCardId {
+  font-size: 11px;
+  color: var(--accent);
+  font-weight: 600;
+  font-family: var(--font-mono);
+}
+
+.kanbanCardTitle {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 3px 0;
+  line-height: 1.4;
+}
+
+.kanbanCardPillar {
+  font-size: 11px;
+  color: var(--text-tertiary);
+}
+
+.kanbanEmpty {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  text-align: center;
+  padding: 20px 0;
+}
+
+/* ── Agents Tab ─────────────────────────────────────────────────── */
+.agentsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.agentCard {
+  background-color: var(--bg-surface);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-subtle);
+  padding: 20px;
+}
+
+.agentHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 14px;
+}
+
+.agentAvatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.agentInfo {
+  margin-left: 12px;
+  flex: 1;
+}
+
+.agentName {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.agentRole {
+  font-size: 12px;
+  color: var(--text-secondary);
+  font-weight: 500;
+  margin-top: 1px;
+}
+
+.agentBadge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 4px;
+  background-color: var(--success-muted);
+  color: var(--success);
+}
+
+.agentModel {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-bottom: 12px;
+}
+
+.agentModelCode {
+  font-family: var(--font-mono);
+  color: var(--warning);
+  font-size: 11px;
+}
+
+.agentTaskBox {
+  background-color: var(--bg-inset);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  margin-bottom: 12px;
+}
+
+.agentTaskLabel {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  font-weight: 600;
+  margin-bottom: 3px;
+}
+
+.agentTaskValue {
+  font-size: 12px;
+  color: var(--text-primary);
+}
+
+/* ── Script Studio Tab ──────────────────────────────────────────── */
+.studioHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.studioTitle {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.studioMeta {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 3px;
+}
+
+.studioActions {
+  display: flex;
+  gap: 10px;
+}
+
+.scriptGrid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 20px;
+}
+
+.scriptSections {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.scriptBlock {
+  background-color: var(--bg-surface);
+  border-radius: var(--radius-md);
+  padding: 16px 18px;
+  border-left: 3px solid transparent;
+}
+
+.scriptBlockLabel {
+  font-size: 11px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  letter-spacing: 0.02em;
+  font-family: var(--font-mono);
+}
+
+.scriptBlockText {
+  font-size: 14px;
+  color: var(--text-primary);
+  line-height: 1.65;
+  font-weight: 400;
+}
+
+/* ── Script Sidebar ─────────────────────────────────────────────── */
+.scriptSidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.sidebarCard {
+  background-color: var(--bg-surface);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-subtle);
+  padding: 16px 18px;
+}
+
+.sidebarCardTitle {
+  margin: 0 0 10px 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.qualityShield {
+  composes: sidebarCard;
+  border-color: var(--success);
+  border-width: 1px;
+}
+
+.shieldHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.shieldTitle {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.shieldBadge {
+  background-color: var(--success-muted);
+  color: var(--success);
+  padding: 2px 8px;
+  border-radius: 3px;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.shieldItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-bottom: 3px;
+}
+
+.shieldCheck {
+  color: var(--success);
+  font-weight: 700;
+}
+
+.hookOption {
+  background-color: var(--bg-inset);
+  padding: 9px 12px;
+  border-radius: var(--radius-sm);
+  margin-bottom: 6px;
+  font-size: 12px;
+  color: var(--text-primary);
+  border-left: 2px solid var(--accent);
+  line-height: 1.5;
+}
+
+.hashtag {
+  background-color: var(--bg-elevated);
+  color: var(--accent);
+  padding: 2px 8px;
+  border-radius: 3px;
+  font-size: 11px;
+  font-family: var(--font-mono);
+}
+
+.durationValue {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--success);
+  font-variant-numeric: tabular-nums;
+}
+
+.wordCount {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  margin-top: 2px;
+}
+
+/* ── Storyboard Tab ─────────────────────────────────────────────── */
+.storyboardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.storyboardTitle {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.storyboardSub {
+  margin: 3px 0 0 0;
+  color: var(--text-tertiary);
+  font-size: 12px;
+}
+
+.storyboardLayout {
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.videoContainer {
+  background-color: #000;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 1px solid var(--border-subtle);
+  height: 604px;
+}
+
+.videoPlayer {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.sceneList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow-y: auto;
+  max-height: 604px;
+}
+
+.sceneCard {
+  display: flex;
+  gap: 14px;
+  background-color: var(--bg-surface);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-subtle);
+  padding: 12px;
+  align-items: center;
+  transition: border-color 0.12s;
+}
+
+.sceneCard:hover {
+  border-color: var(--border-medium);
+}
+
+.sceneImg {
+  width: 60px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-subtle);
+}
+
+.sceneInfo {
+  flex: 1;
+}
+
+.sceneActRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.sceneAct {
+  font-weight: 600;
+  font-size: 11px;
+}
+
+.sceneTime {
+  color: var(--text-tertiary);
+  font-size: 11px;
+  font-family: var(--font-mono);
+}
+
+.sceneTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 3px 0;
+}
+
+.sceneDetail {
+  font-size: 11px;
+  color: var(--text-tertiary);
+}
+
+/* ── QC Tab ─────────────────────────────────────────────────────── */
+.qcHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.qcTitle {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.qcSub {
+  margin: 3px 0 0 0;
+  color: var(--text-tertiary);
+  font-size: 12px;
+}
+
+.qcGrid {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 20px;
+}
+
+.qcScorePanel {
+  background-color: var(--bg-surface);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-subtle);
+  padding: 22px;
+}
+
+.qcScoreHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.qcScoreTitle {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.qcBadge {
+  font-size: 13px;
+  font-weight: 700;
+  padding: 5px 14px;
+  border-radius: 4px;
+}
+
+.qcBadgePass {
+  composes: qcBadge;
+  background-color: var(--success-muted);
+  color: var(--success);
+}
+
+.qcBadgeFail {
+  composes: qcBadge;
+  background-color: var(--danger-muted);
+  color: var(--danger);
+}
+
+.qcBars {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.qcBarRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-bottom: 3px;
+}
+
+.qcBarScore {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.qcBarTrack {
+  height: 6px;
+  background-color: var(--bg-inset);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.qcBarFill {
+  height: 100%;
+  background-color: var(--accent);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.factCheckBox {
+  margin-top: 20px;
+  padding: 14px;
+  background-color: var(--bg-inset);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-subtle);
+}
+
+.factCheckLabel {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+}
+
+.factCheckText {
+  font-size: 13px;
+  color: var(--text-primary);
+  line-height: 1.5;
+}
+
+/* ── QC Sidebar ─────────────────────────────────────────────────── */
+.qcSidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.auditCard {
+  composes: sidebarCard;
+  border-color: var(--success);
+}
+
+.statusCard {
+  composes: sidebarCard;
+}
+
+.statusText {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* ── Approval Tab ───────────────────────────────────────────────── */
+.approvalContainer {
+  max-width: 820px;
+  margin: 0 auto;
+}
+
+.approvalPanel {
+  background-color: var(--bg-surface);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-subtle);
+  padding: 28px;
+}
+
+.approvalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.approvalBadge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 4px;
+  background-color: var(--accent-muted);
+  color: var(--accent);
+}
+
+.approvalTitle {
+  margin: 8px 0 0 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.approvalStatus {
+  text-align: right;
+}
+
+.approvalStatusLabel {
+  font-size: 11px;
+  color: var(--text-tertiary);
+}
+
+.approvalStatusValue {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.guardrailBox {
+  padding: 14px 18px;
+  border-radius: var(--radius-sm);
+  margin-bottom: 20px;
+}
+
+.guardrailPass {
+  composes: guardrailBox;
+  background-color: var(--success-muted);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  color: var(--success);
+}
+
+.guardrailFail {
+  composes: guardrailBox;
+  background-color: var(--danger-muted);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  color: var(--danger);
+}
+
+.guardrailTitle {
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.guardrailText {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+
+.notesLabel {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+}
+
+.notesInput {
+  width: 100%;
+  background-color: var(--bg-inset);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  color: var(--text-primary);
+  font-size: 13px;
+  font-family: var(--font-sans);
+  resize: vertical;
+}
+
+.notesInput::placeholder {
+  color: var(--text-tertiary);
+}
+
+.approvalActions {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.approveBtn {
+  flex: 2;
+}
+
+.reviseBtn {
+  flex: 1;
+}
+
+/* ── Calendar Tab ───────────────────────────────────────────────── */
+.calendarHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.tableContainer {
+  background-color: var(--bg-surface);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-subtle);
+  overflow: hidden;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 13px;
+}
+
+.table thead tr {
+  background-color: var(--bg-elevated);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.table th {
+  padding: 11px 16px;
+  color: var(--text-tertiary);
+  font-weight: 600;
+  font-size: 11px;
+}
+
+.table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.tableId {
+  font-weight: 600;
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+.tableTitle {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.tableBadge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 3px;
+  background-color: var(--bg-elevated);
+}
+
+.tableLink {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.tableLink:hover { text-decoration: underline; }
+
+.tablePending {
+  color: var(--text-tertiary);
+  font-size: 12px;
+}
+
+/* ── Community Tab ──────────────────────────────────────────────── */
+.communityGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.commentCard {
+  background-color: var(--bg-surface);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-subtle);
+  padding: 18px;
+}
+
+.commentHeader {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.commentUser {
+  color: var(--text-primary);
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.sentimentBadge {
+  background-color: var(--bg-elevated);
+  color: var(--warning);
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 3px;
+}
+
+.commentText {
+  font-size: 13px;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+  font-style: italic;
+  line-height: 1.5;
+}
+
+.replyBox {
+  background-color: var(--bg-inset);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  border: 1px solid var(--border-subtle);
+}
+
+.replyLabel {
+  font-size: 11px;
+  color: var(--success);
+  font-weight: 600;
+  margin-bottom: 3px;
+}
+
+.replyText {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* ── Monetization Tab ───────────────────────────────────────────── */
+.financialNotice {
+  background-color: var(--success-muted);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  padding: 12px 18px;
+  border-radius: var(--radius-sm);
+  margin-bottom: 18px;
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+.campaignGrid {
+  composes: communityGrid;
+}
+
+.campaignCard {
+  composes: commentCard;
+}
+
+.campaignHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 14px;
+}
+
+.campaignBrand {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.campaignName {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+.campaignStatus {
+  composes: sentimentBadge;
+  color: var(--accent);
+}
+
+.campaignMetrics {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin: 14px 0;
+  text-align: center;
+}
+
+.campaignMetricBox {
+  background-color: var(--bg-inset);
+  padding: 10px 8px;
+  border-radius: var(--radius-sm);
+}
+
+.campaignMetricLabel {
+  font-size: 10px;
+  color: var(--text-tertiary);
+  font-weight: 500;
+}
+
+.campaignMetricValue {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-top: 2px;
+  font-variant-numeric: tabular-nums;
+}
+
+.utmCode {
+  font-size: 11px;
+  color: var(--text-tertiary);
+}
+
+.utmLink {
+  font-family: var(--font-mono);
+  color: var(--accent);
+  font-size: 11px;
+}
+
+/* ── Analytics Tab ──────────────────────────────────────────────── */
+.analyticsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.platformCard {
+  background-color: var(--bg-surface);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-subtle);
+  padding: 20px;
+}
+
+.platformName {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.platformViews {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 6px;
+  font-variant-numeric: tabular-nums;
+}
+
+.platformViewsLabel {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  font-weight: 400;
+  margin-left: 4px;
+}
+
+.platformRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.recsPanel {
+  background-color: var(--bg-surface);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-subtle);
+  padding: 22px;
+}
+
+.recsTitle {
+  margin: 0 0 14px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--success);
+}
+
+.recsList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.recItem {
+  background-color: var(--bg-inset);
+  padding: 11px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  border-left: 2px solid var(--success);
+  color: var(--text-primary);
+  line-height: 1.5;
+}
+
+/* ── Settings Tab ───────────────────────────────────────────────── */
+.settingsPanel {
+  background-color: var(--bg-surface);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-subtle);
+  padding: 22px;
+  max-width: 720px;
+}
+
+.settingsTitle {
+  margin: 0 0 16px 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.settingsList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.settingsRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 11px 14px;
+  background-color: var(--bg-inset);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-subtle);
+}
+
+.settingsName {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 13px;
+}
+
+.settingsStatus {
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.settingsOk { composes: settingsStatus; color: var(--success); }
+.settingsFail { composes: settingsStatus; color: var(--danger); }
+
+/* ── Empty States ───────────────────────────────────────────────── */
+.emptyState {
+  text-align: center;
+  padding: 48px 0;
+  background-color: var(--bg-surface);
+  border-radius: var(--radius-md);
+}
+
+.emptyText {
+  color: var(--text-tertiary);
+  margin-bottom: 14px;
+  font-size: 13px;
+}
+
+/* ── Responsive ─────────────────────────────────────────────────── */
+@media (max-width: 1200px) {
+  .metricsGrid { grid-template-columns: repeat(2, 1fr); }
+  .kanbanGrid { grid-template-columns: repeat(3, 1fr); }
+  .scriptGrid { grid-template-columns: 1fr; }
+  .qcGrid { grid-template-columns: 1fr; }
+  .storyboardLayout { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 768px) {
+  .sidebar { display: none; }
+  .metricsGrid { grid-template-columns: 1fr; }
+  .kanbanGrid { grid-template-columns: 1fr; }
+  .agentsGrid { grid-template-columns: 1fr; }
+  .communityGrid { grid-template-columns: 1fr; }
+  .analyticsGrid { grid-template-columns: 1fr; }
+  .content { padding: 16px; }
+}
+
+/* ── Research & Trend Radar Tab ─────────────────────────────────── */
+.radarGrid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.radarCard {
+  background-color: var(--bg-surface);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-subtle);
+  padding: 14px;
+}
+
+.radarHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.radarSourceName {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.radarVelocityBadge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background-color: var(--accent-muted);
+  color: var(--accent);
+}
+
+.radarFocus {
+  font-size: 11px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+.ideasTableContainer {
+  background-color: var(--bg-surface);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-subtle);
+  overflow-x: auto;
+  margin-bottom: 24px;
+}
+
+.scorePillPriority {
+  background-color: var(--success-muted);
+  color: var(--success);
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+}
+
+.scorePillGood {
+  background-color: var(--accent-muted);
+  color: var(--accent);
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+}
+
+.scorePillDevelop {
+  background-color: var(--warning-muted);
+  color: var(--warning);
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+}
+
+.autonomousBadgeActive {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background-color: var(--success-muted);
+  color: var(--success);
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.autonomousBadgeInactive {
+  composes: autonomousBadgeActive;
+  background-color: var(--danger-muted);
+  color: var(--danger);
+  border-color: rgba(239, 68, 68, 0.3);
+}
